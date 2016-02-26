@@ -46,8 +46,12 @@ class RootSerializer
     RootSerializer(const RootSerializer&) = delete;
     RootSerializer operator=(const RootSerializer&) = delete;
 
-    ~RootSerializer()
-    {}
+    virtual ~RootSerializer()
+    {
+        if(fContainer)
+            delete fContainer;
+        fContainer=nullptr;
+    }
 
     void InitContainer(const std::string &ClassName)
     {
@@ -105,8 +109,12 @@ class RootDeSerializer
     RootDeSerializer(const RootDeSerializer&) = delete;
     RootDeSerializer operator=(const RootDeSerializer&) = delete;
 
-    ~RootDeSerializer()
-    {}
+    virtual ~RootDeSerializer()
+    {
+        if(fContainer)
+            delete fContainer;
+        fContainer=nullptr;
+    }
 
     void InitContainer(const std::string &ClassName)
     {

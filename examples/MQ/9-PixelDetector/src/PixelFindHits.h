@@ -49,9 +49,9 @@ class PixelFindHits : public FairTask
   /** Execution **/
   virtual void Exec(Option_t* opt);
 
-  /** Execution on MQ, for now with hardcoded-parameters**/
-  virtual void ExecMQ(Option_t* opt);
-
+// MQ
+  TClonesArray* ExecMQ(TClonesArray* digis);
+  void InitMQ();
 
  private:
 
