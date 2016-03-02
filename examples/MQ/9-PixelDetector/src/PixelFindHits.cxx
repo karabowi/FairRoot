@@ -101,7 +101,7 @@ PixelFindHits::~PixelFindHits() {
 void PixelFindHits::Exec(Option_t* opt) {
   Reset();
 
-  LOG(INFO) << "PixelFindHits::Exec() EVENT " << fTNofEvents << FairLogger::endl;
+  LOG(DEBUG) << "PixelFindHits::Exec() EVENT " << fTNofEvents << FairLogger::endl;
 
   fTNofEvents++;
 
@@ -138,8 +138,8 @@ void PixelFindHits::Exec(Option_t* opt) {
 
     curNode->LocalToMaster(locPosCalc,globPos);
 
-    LOG(INFO) << "HIT   ON " << detId << " POSITION:  " << locPosCalc[0] << " / " << locPosCalc[1] << FairLogger::endl;
-    LOG(INFO) << "GLOB HIT " << detId << " POSITION:  " << globPos[0] << " / " << globPos[1] << " / " << globPos[2] << FairLogger::endl;
+    LOG(DEBUG) << "HIT   ON " << detId << " POSITION:  " << locPosCalc[0] << " / " << locPosCalc[1] << FairLogger::endl;
+    LOG(DEBUG) << "GLOB HIT " << detId << " POSITION:  " << globPos[0] << " / " << globPos[1] << " / " << globPos[2] << FairLogger::endl;
 
     TVector3 pos   (globPos[0],globPos[1],globPos[2]);
     TVector3 posErr(fPitchX/TMath::Sqrt(12.),fPitchY/TMath::Sqrt(12.),actBox->GetDZ());
@@ -153,8 +153,9 @@ void PixelFindHits::Exec(Option_t* opt) {
 }
 // -------------------------------------------------------------------------
 
+/*
 // -----   Public method Exec   --------------------------------------------
-void PixelFindHits::ExecMQ(Option_t* opt) {
+TClonesArray* PixelFindHits::ExecMQ(Option_t* opt) {
 
   Reset();
 
@@ -237,6 +238,7 @@ void PixelFindHits::ExecMQ(Option_t* opt) {
   fTNofHits += fNHits;
 }
 // -------------------------------------------------------------------------
+*/
 
 // -----   Private method SetParContainers   -------------------------------
 void PixelFindHits::SetParContainers() {
@@ -353,7 +355,7 @@ void PixelFindHits::InitMQ(const std::string& root_file, const std::string& asci
   //PixelDigiPar* fDigiPar = (PixelDigiPar*)(fRtdb->getContainer("PixelDigiParameters"));
   fDigiPar = (PixelDigiPar*)(fRtdb->getContainer("PixelDigiParameters"));
   
-  Int_t runId = 1456147577;
+  Int_t runId = 1456844674;
   std::cout << "trying to initContainers with runId = " << runId << std::endl;
   fRtdb->initContainers(runId);
 
@@ -412,8 +414,8 @@ TClonesArray* PixelFindHits::ExecMQ(TClonesArray* digis)
 
     curNode->LocalToMaster(locPosCalc,globPos);
 
-    LOG(INFO) << "HIT   ON " << detId << " POSITION:  " << locPosCalc[0] << " / " << locPosCalc[1] << FairLogger::endl;
-    LOG(INFO) << "GLOB HIT " << detId << " POSITION:  " << globPos[0] << " / " << globPos[1] << " / " << globPos[2] << FairLogger::endl;
+    LOG(DEBUG) << "HIT   ON " << detId << " POSITION:  " << locPosCalc[0] << " / " << locPosCalc[1] << FairLogger::endl;
+    LOG(DEBUG) << "GLOB HIT " << detId << " POSITION:  " << globPos[0] << " / " << globPos[1] << " / " << globPos[2] << FairLogger::endl;
 
     TVector3 pos   (globPos[0],globPos[1],globPos[2]);
     TVector3 posErr(fPitchX/TMath::Sqrt(12.),fPitchY/TMath::Sqrt(12.),actBox->GetDZ());
