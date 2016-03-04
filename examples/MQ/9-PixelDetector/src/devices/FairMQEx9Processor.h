@@ -12,7 +12,8 @@
 #include <string>
 
 #include "FairMQDevice.h"
-#include "RootSerializer.h"
+#include "FairRootSerializer.h"
+#include "FairEventData.h"
 #include "TClonesArray.h"
 #include "PixelFindHits.h"
 
@@ -43,11 +44,12 @@ class FairMQEx9Processor : public FairMQDevice
 
 
     TClonesArray* fOutput;
+    FairEventData* fOutputEventData;
     std::string fRootParFileName;
     std::string fAsciiParFileName;
     std::string fInputClassName;
-    RootSerializer fSerializer;
-    RootDeSerializer fDeSerializer;
+    FairRootSerializer fSerializer;
+    FairRootDeSerializer fDeSerializer;
     PixelFindHits* fHitFinder;
 
     

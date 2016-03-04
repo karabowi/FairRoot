@@ -7,7 +7,7 @@
 #include "GenericProcessor.h"
 #include "runSimpleMQStateMachine.h"
 #include "BoostSerializer.h"
-#include "RootSerializer.h"
+#include "FairRootSerializer.h"
 
 
 // 9-PixelDetector example

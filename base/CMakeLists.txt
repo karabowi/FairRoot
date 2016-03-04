@@ -101,6 +101,7 @@ sim/FairVolumeList.cxx
 
 event/FairEventBuilder.cxx
 event/FairEventBuilderManager.cxx
+event/FairEventData.cxx
 event/FairEventHeader.cxx
 event/FairFileHeader.cxx
 event/FairFileInfo.cxx

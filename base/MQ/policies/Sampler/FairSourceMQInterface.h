@@ -11,6 +11,8 @@
 
 #include "FairRunAna.h"
 #include "FairFileSource.h"
+#include "FairEventData.h"
+#include "FairEventHeader.h"
 //#include "FairLmdSource.h"
 //#include "FairMbsSource.h"
 //#include "FairMbsStreamSource.h"
@@ -20,18 +22,27 @@
 #include <functional>
 
 template<typename T, typename U>
-using enable_if_match = typename std::enable_if<std::is_same<T,U>::value,int>::type;
+  using enable_if_match2 = typename std::enable_if<std::is_same<T,U>::value ,int>::type;
+template<typename T, typename U, typename V, typename W>
+  using enable_if_match4 = typename std::enable_if<std::is_same<T,U>::value && std::is_same<V,W>::value ,int>::type;
 
-template<typename FairSourceType, typename DataType>
-class FairSourceMQInterface : public BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType>>
+struct tca{};
+struct FevtData{};
+template<typename FairSourceType, typename DataType, typename V>
+  //template<typename FairSourceType, typename DataType>
+  class FairSourceMQInterface : public BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType, V>>
+  //class FairSourceMQInterface : public BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType>>
 {
     typedef DataType* DataType_ptr;
-    typedef FairSourceMQInterface<FairSourceType,DataType> this_type;
+    //    typedef FairSourceMQInterface<FairSourceType,DataType,V> this_type;
+    typedef FairSourceMQInterface<FairSourceType,DataType,V> this_type;
 
   public:
     FairSourceMQInterface() :
-        BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType>>(),
+    //    BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType, V>>(),
+    BaseSourcePolicy<FairSourceMQInterface<FairSourceType, DataType,V>>(),
         fSource(nullptr),
+        fEventData(nullptr),
         fData(nullptr),
         fIndex(0),
         fMaxIndex(-1),
@@ -52,6 +63,12 @@ class FairSourceMQInterface : public BaseSourcePolicy<FairSourceMQInterface<Fair
             delete fData;
         }
         fData = nullptr;
+
+	if (fEventData)
+	{
+	  delete fEventData;
+	}
+	fEventData = nullptr;
 
         if (fSource)
         {
@@ -81,31 +98,47 @@ class FairSourceMQInterface : public BaseSourcePolicy<FairSourceMQInterface<Fair
     //______________________________________________________________________________
     // FairFileSource
 
-    template <typename T = FairSourceType, enable_if_match<T, FairFileSource> = 0>
+    template <typename T = FairSourceType, enable_if_match2<T, FairFileSource> = 0>
     void InitSource()
     {
         fRunAna = new FairRunAna();
         fSource = new FairSourceType(fSourceName.c_str());
         fSource->Init();
         fSource->ActivateObject((TObject**)&fData,fBranchName.c_str());
-        fMaxIndex = fSource->CheckMaxEventNo();
+	fSource->ActivateObject((TObject**)&fEventHeader,"EventHeader.");
+	fEventData = new FairEventData();
+	fEventData->SetObject(fData);
+	fMaxIndex = fSource->CheckMaxEventNo();
     }
 
-    template <typename T = FairSourceType, enable_if_match<T, FairFileSource> = 0>
+    template <typename T = FairSourceType, enable_if_match2<T, FairFileSource> = 0>
     void SetIndex(int64_t eventIdx)
     {
         fIndex = eventIdx;
     }
 
-    template <typename T = FairSourceType, enable_if_match<T, FairFileSource> = 0>
-    DataType_ptr GetOutData()
-    {
-        fSource->ReadEvent(fIndex);
-        return fData;
-    }
-
-  protected:
+    template <typename T = FairSourceType, typename U = V, enable_if_match4<T, FairFileSource,U,tca> = 0 > 
+      DataType_ptr GetOutData()  
+      {  
+     	fSource->ReadEvent(fIndex);  
+     	return fData;  
+      } 
+    
+    template <typename T = FairSourceType, typename U=V, enable_if_match4<T, FairFileSource,U,FevtData> = 0 >
+      FairEventData* GetOutData() 
+      {
+	fSource->ReadEvent(fIndex);
+	fEventData->SetRunId        (fEventHeader->GetRunId()        );
+	fEventData->SetEventTime    (fEventHeader->GetEventTime()    );
+	fEventData->SetInputFileId  (fEventHeader->GetInputFileId()  );
+	fEventData->SetMCEntryNumber(fEventHeader->GetMCEntryNumber());
+	return fEventData;
+      }
+    
+ protected:
     FairSourceType* fSource;
+    FairEventData* fEventData;
+    FairEventHeader* fEventHeader;
     DataType_ptr fData;
     int64_t fIndex;
     int64_t fMaxIndex;

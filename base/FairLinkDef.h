@@ -19,6 +19,7 @@
 #pragma link C++ class FairDetector+;
 #pragma link C++ class FairEventBuilder+;
 #pragma link C++ class FairEventBuilderManager+;
+#pragma link C++ class FairEventData+;
 #pragma link C++ class FairEventHeader;
 #pragma link C++ class FairFileHeader+;
 #pragma link C++ class FairGeaneApplication+;

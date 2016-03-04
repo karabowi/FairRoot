@@ -5,12 +5,12 @@
 
 // FairRoot - base/MQ
 #include "FairRootOutFileManager.h"
-#include "RootSerializer.h"
+#include "FairRootSerializer.h"
 
 // temp to compile
 #include "PixelHit.h"
 
-typedef GenericFileSink<RootDeSerializer, FairRootOutFileManager<PixelHit>>                         TSinkRoot;
+typedef GenericFileSink<FairRootDeSerializer, FairRootOutFileManager<PixelHit>>                         TSinkRoot;
 
 int main(int argc, char** argv)
 {
@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
         FairMQProgOptions config;
 
-        config.AddToCmdLineOptions(sink_options);
+        config.AddToCmdLineOptions(sink_options); 
 
         if (config.ParseAll(argc, argv))
         {

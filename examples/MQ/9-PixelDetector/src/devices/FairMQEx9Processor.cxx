@@ -10,12 +10,13 @@
 
 
 FairMQEx9Processor::FairMQEx9Processor() : 	fOutput(nullptr),
-										    fRootParFileName(),
-                                            fAsciiParFileName(),
-										    fInputClassName(),
-										    fSerializer(),
-										    fDeSerializer(),
-                                            fHitFinder(new PixelFindHits())
+						fOutputEventData(nullptr),
+						fRootParFileName(),
+						fAsciiParFileName(),
+						fInputClassName(),
+						fSerializer(),
+						fDeSerializer(),
+						fHitFinder(new PixelFindHits())
 {
 
 }
@@ -33,8 +34,8 @@ FairMQEx9Processor::~FairMQEx9Processor()
 
 void FairMQEx9Processor::Init()
 {
-	fDeSerializer.InitContainer(fInputClassName);
-    fHitFinder->InitMQ(fRootParFileName,fAsciiParFileName);
+  fDeSerializer.InitContainer(fInputClassName);
+  fHitFinder->InitMQ(fRootParFileName,fAsciiParFileName);
 }
 
 void FairMQEx9Processor::Run()
@@ -53,16 +54,21 @@ void FairMQEx9Processor::Run()
         {
             receivedMsgs++;
             // Deserialize data into TClonesArray
-            TClonesArray* input = fDeSerializer.DeserializeMsg(msg.get());
+	    //            TClonesArray* input = fDeSerializer.DeserializeMsg(msg.get());
+	    FairEventData* input = fDeSerializer.DeserializeMsg(msg.get());
+	    TClonesArray* inputD = (TClonesArray*)input->GetObject();
             // Execut hit finder task
-            fOutput=fHitFinder->ExecMQ(input);
+            fOutput=fHitFinder->ExecMQ(inputD);
             // if output not empty serialize and send
-            if(!fOutput->IsEmpty())
-            {
-                fSerializer.SetMessage(msg.get());
-                outputChannel.Send(fSerializer.SerializeMsg(fOutput));
-                sentMsgs++;
-            }
+	    fOutputEventData = new FairEventData();
+	    fOutputEventData->SetRunId        (input->GetRunId()        );
+	    fOutputEventData->SetEventTime    (input->GetEventTime()    );
+	    fOutputEventData->SetInputFileId  (input->GetInputFileId()  );
+	    fOutputEventData->SetMCEntryNumber(input->GetMCEntryNumber());
+	    fOutputEventData->SetObject(fOutput);
+	    fSerializer.SetMessage(msg.get());
+	    outputChannel.Send(fSerializer.SerializeMsg(fOutputEventData));
+	    sentMsgs++;
         }
     }
 

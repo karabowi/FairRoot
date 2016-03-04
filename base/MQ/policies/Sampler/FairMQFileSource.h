@@ -7,5 +7,8 @@
  ********************************************************************************/
 
 #include "FairSourceMQInterface.h"
+#include "FairEventData.h"
 
-typedef FairSourceMQInterface<FairFileSource,TClonesArray>  FairMQFileSource_t;
+typedef FairSourceMQInterface<FairFileSource,TClonesArray,tca>  FairMQFileSource_t;
+
+typedef FairSourceMQInterface<FairFileSource,TClonesArray,FevtData> FairMQFileSource_f;

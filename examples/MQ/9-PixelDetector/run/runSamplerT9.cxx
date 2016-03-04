@@ -21,12 +21,12 @@
 // FairRoot - Base/MQ
 // sampler policies
 #include "FairMQFileSource.h"
-#include "RootSerializer.h"
+#include "FairRootSerializer.h"
 
 // ////////////////////////////////////////////////////////////////////////
 
 // build sampler type
-typedef GenericSampler<FairMQFileSource_t, RootSerializer>           TSamplerTMessage;
+typedef GenericSampler<FairMQFileSource_f, FairRootSerializer>           TSamplerTMessage;
 
 int main(int argc, char** argv)
 {

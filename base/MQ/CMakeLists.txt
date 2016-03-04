@@ -51,8 +51,11 @@ Set(BaseMQHDRFiles
   policies/Sampler/FairMQFileSource.h
   policies/Serialization/BinaryBaseClassSerializer.h
   policies/Serialization/BoostSerializer.h
+  policies/Serialization/FairRootSerializer.h
   policies/Serialization/RootSerializer.h
   policies/Serialization/NoInputMethod.h
+  policies/Storage/FairRootOutFileManager.h
+  policies/Storage/FairRootOutFileManager.tpl
   policies/Storage/RootOutFileManager.h
   policies/Storage/RootOutFileManager.tpl
   policies/Storage/BinaryOutFileManager.h
