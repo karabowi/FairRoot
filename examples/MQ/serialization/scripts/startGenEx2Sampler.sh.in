@@ -31,4 +31,4 @@ MQCONFIGFILE="@CMAKE_SOURCE_DIR@/examples/MQ/GenericDevices/options/genericMQTut
 SAMPLER="genericMQTutoSampler$opt"
 SAMPLER+=" --id sampler1 --config $CONFIGFILE --data-format $dataFormat"
 SAMPLER+=" --mq-config $MQCONFIGFILE"
-@CMAKE_BINARY_DIR@/bin/$SAMPLER
+@CMAKE_BINARY_DIR@/bin/examples/MQ/serialization/$SAMPLER
