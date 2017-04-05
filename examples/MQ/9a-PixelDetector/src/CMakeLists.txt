@@ -39,13 +39,15 @@ link_directories( ${LINK_DIRECTORIES})
 Set(NO_DICT_SRCS
 devices/FairMQEx9aSamplerBin.cxx
 devices/FairMQEx9aFileSinkBin.cxx
+devices/FairMQEx9aFindHitsProcessor.cxx
 )
 
 Set(NO_DICT_HEADERS
 devices/FairMQEx9aSamplerBin.h
 devices/FairMQEx9aFileSinkBin.h
-devices/FairMQEx9aTaskProcessorBin.h
-devices/FairMQEx9aTaskProcessorBin.tpl
+#devices/FairMQEx9aTaskProcessorBin.h
+#devices/FairMQEx9aTaskProcessorBin.tpl
+devices/FairMQEx9aFindHitsProcessor.h
 )
 
 set(SRCS

@@ -110,13 +110,15 @@ link_directories(${LINK_DIRECTORIES})
 Set(Exe_Names
     ex9a-samplerBin
     ex9a-sinkBin
-    ex9a-processorBin
+#    ex9a-processorBin
+    ex9a-findHitsProc
 )
 
 set(Exe_Source
     runEx9aSamplerBin.cxx
     runEx9aFileSinkBin.cxx
-    runEx9aTaskProcessorBin.cxx
+#    runEx9aTaskProcessorBin.cxx
+    runEx9aFindHitsProcessor.cxx
 )
 
 

@@ -9,7 +9,7 @@
 
 
 
-void run_sim(Int_t nEvents = 10, TString mcEngine = "TGeant3", Int_t fileId = 0)
+void run_sim(Int_t nEvents = 10, TString mcEngine = "TGeant3", Int_t fileId = 0, Int_t nofPartPerEvent = 5)
 {
   
   TString dir = getenv("VMCWORKDIR");
@@ -83,7 +83,7 @@ void run_sim(Int_t nEvents = 10, TString mcEngine = "TGeant3", Int_t fileId = 0)
 
   // -----   Create PrimaryGenerator   --------------------------------------
   FairPrimaryGenerator* primGen = new FairPrimaryGenerator();
-  FairBoxGenerator* boxGen = new FairBoxGenerator(partPdgC[chosenPart], 5);
+  FairBoxGenerator* boxGen = new FairBoxGenerator(partPdgC[chosenPart], nofPartPerEvent);
   boxGen->SetPRange(1,2);
   boxGen->SetThetaRange(0,40);
   boxGen->SetPhiRange(0,360);

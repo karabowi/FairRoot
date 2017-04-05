@@ -100,27 +100,27 @@ SAMPLER+=" --file-name $INPUTFILE --branch-name EventHeader. --branch-name $INPU
 
 ########################## start PROCESSORs
 PROCESSOR1="@EXAMPLE9a_BIN_LOCATION@/"
-PROCESSOR1+="ex9a-processorBin $TRANSPORT"
+PROCESSOR1+="ex9a-findHitsProc $TRANSPORT"
 PROCESSOR1+=" $VERBOSE"
 PROCESSOR1+=" --id processor1 $FAIRTASKNAME --mq-config $MQCONFIGFILE --control static --log-color false"
 
 PROCESSOR2="@EXAMPLE9a_BIN_LOCATION@/"
-PROCESSOR2+="ex9a-processorBin $TRANSPORT"
+PROCESSOR2+="ex9a-findHitsProc $TRANSPORT"
 PROCESSOR2+=" $VERBOSE"
 PROCESSOR2+=" --id processor2 $FAIRTASKNAME --mq-config $MQCONFIGFILE --control static --log-color false"
 
 PROCESSOR3="@EXAMPLE9a_BIN_LOCATION@/"
-PROCESSOR3+="ex9a-processorBin $TRANSPORT"
+PROCESSOR3+="ex9a-findHitsProc $TRANSPORT"
 PROCESSOR3+=" $VERBOSE"
 PROCESSOR3+=" --id processor3 $FAIRTASKNAME --mq-config $MQCONFIGFILE --control static --log-color false"
 
 PROCESSOR4="@EXAMPLE9a_BIN_LOCATION@/"
-PROCESSOR4+="ex9a-processorBin $TRANSPORT"
+PROCESSOR4+="ex9a-findHitsProc $TRANSPORT"
 PROCESSOR4+=" $VERBOSE"
 PROCESSOR4+=" --id processor4 $FAIRTASKNAME --mq-config $MQCONFIGFILE --control static --log-color false"
 
 PROCESSOR5="@EXAMPLE9a_BIN_LOCATION@/"
-PROCESSOR5+="ex9a-processorBin $TRANSPORT"
+PROCESSOR5+="ex9a-findHitsProc $TRANSPORT"
 PROCESSOR5+=" $VERBOSE"
 PROCESSOR5+=" --id processor5 $FAIRTASKNAME --mq-config $MQCONFIGFILE --control static --log-color false"
 
