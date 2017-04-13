@@ -1,0 +1,105 @@
+#!/bin/bash
+
+echo "CMAKE_SOURCE_DIR = @CMAKE_SOURCE_DIR@"
+echo "CMAKE_INSTALL_PREFIX = @CMAKE_INSTALL_PREFIX@"
+
+CURRENTDIR=$(pwd)
+
+cd TestProject
+
+rm -rf TprDetector
+
+if [ -f CMakeLists_orig.txt ]; then
+    cp CMakeLists_orig.txt CMakeLists.txt
+fi
+cp CMakeLists.txt CMakeLists_orig.txt
+cat CMakeLists_orig.txt | sed -e 's.add_subdirectory (field).add_subdirectory (field)\'$'\nadd_subdirectory (TprDetector).g' > CMakeLists.txt
+
+mkdir TprDetector
+cp @CMAKE_SOURCE_DIR@/templates/NewDetector/* TprDetector/
+cd TprDetector/
+./rename.sh TprDetector TESTPROJECT Tpr
+
+cat CMakeLists.txt  | sed -e 's.\#\${CMAKE_SOURCE_DIR}/<directory which contains the DetectorList>.\${CMAKE_SOURCE_DIR}/TprData.g' > CMakeLists2.txt
+cat CMakeLists2.txt | sed -e 's.\${ROOT_LIBRARY_DIR}.\${ROOT_LIBRARY_DIR}\'$'\n\${FAIRLIBDIR}.g' > CMakeLists.txt
+
+cd ../TprData/
+cp TprDetectorList.h TprDetectorList_orig.h
+cat TprDetectorList_orig.h | sed -e 's.enum DetectorId {kTprTde, kSTOPHERE};.enum DetectorId {kTprTde, kTprDetector, kSTOPHERE};.g' > TprDetectorList.h
+
+echo "//*********************************   TPRDETECTOR  z=  50 mm
+TprDetector1
+cave
+BOX
+silicon
+-250.0 -300.0 -0.075
++250.0 -300.0 -0.075
++250.0 -300.0 +0.075
+-250.0 -300.0 +0.075
+-250.0 +300.0 -0.075
++250.0 +300.0 -0.075
++250.0 +300.0 +0.075
+-250.0 +300.0 +0.075
+
+0. 0. 50.0
+1.  0.  0.  0.  1.  0.  0.  0.  1.
+//*********************************   TPRDETECTOR  z= 100 mm
+TprDetector2
+cave
+BOX
+silicon
+-500.0 -600.0 -0.075
++500.0 -600.0 -0.075
++500.0 -600.0 +0.075
+-500.0 -600.0 +0.075
+-500.0 +600.0 -0.075
++500.0 +600.0 -0.075
++500.0 +600.0 +0.075
+-500.0 +600.0 +0.075
+
+0. 0. 100.0
+1.  0.  0.  0.  1.  0.  0.  0.  1.
+//*********************************   TPRDETECTOR  z= 500 mm
+TprDetector3
+cave
+BOX
+silicon
+-1000.0 -1200.0 -0.075
++1000.0 -1200.0 -0.075
++1000.0 -1200.0 +0.075
+-1000.0 -1200.0 +0.075
+-1000.0 +1200.0 -0.075
++1000.0 +1200.0 -0.075
++1000.0 +1200.0 +0.075
+-1000.0 +1200.0 +0.075
+
+0. 0. 500.0
+1.  0.  0.  0.  1.  0.  0.  0.  1.
+//*********************************
+" > ../geometry/TprDetector.geo
+
+cd ../build/
+
+. ./config.sh
+make 
+
+cd ../macro/
+if [ -f run_sim_orig.C ]; then
+    cp run_sim_orig.C run_sim.C
+fi
+
+cp run_sim.C run_sim_orig.C
+cat run_sim_orig.C | sed -e 's.  run->AddModule(NewDet);.  run->AddModule(NewDet);\'$'\n  FairDetector* TestDet = new TprDetector(\"TestDetector2\",kTRUE);  TestDet->SetGeometryFileName(\"TprDetector\.geo\");  run->AddModule(TestDet);.g' > run_sim.C
+
+root -l -q run_sim.C
+
+OUTPUT_EVENTS="$(echo "cout<<cbmsim->GetEntries()<<endl;" | root -l -b test.root | tail -1)"
+OUTPUT_POINTS="$(echo "cout<<cbmsim->Draw(\"TprDetectorPoint.fX\",\"\")<<endl;" | root -l -b test.root | tail -1)"
+
+if (( OUTPUT_EVENTS != 100 || OUTPUT_POINTS < 500 )); then
+    echo "TEST FAILED. Registered $OUTPUT_POINTS (expected more than 500) points in $OUTPUT_EVENTS (expected 100) events."
+else
+    echo "TEST SUCCESS. Registered $OUTPUT_POINTS points in $OUTPUT_EVENTS events."
+fi
+
+cd $CURRENTDIR

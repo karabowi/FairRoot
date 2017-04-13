@@ -320,6 +320,8 @@ if(BUILD_EXAMPLES)
   add_subdirectory (examples)
 endif(BUILD_EXAMPLES)
 
+add_subdirectory (templates)
+
 if(IWYU_FOUND)
 
   ADD_CUSTOM_TARGET(checkHEADERS

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "CMAKE_SOURCE_DIR = @CMAKE_SOURCE_DIR@"
+echo "CMAKE_INSTALL_PREFIX = @CMAKE_INSTALL_PREFIX@"
+
+CURRENTDIR=$(pwd)
+
+rm -rf TestProject
+
+mkdir TestProject
+cp -r @CMAKE_SOURCE_DIR@/templates/project_template/* TestProject/
+cd TestProject/
+
+FAIRROOTPATH=@CMAKE_INSTALL_PREFIX@
+
+. ./rename.sh TestProject Tpr tde
+
+mkdir build
+cd build
+
+cmake ../ -DUSE_DIFFERENT_COMPILER=TRUE
+make -j4
+
+. ./config.sh
+
+cd ../macro/
+
+root -l -q run_sim.C
+
+OUTPUT_EVENTS="$(echo "cout<<cbmsim->GetEntries()<<endl;" | root -l -b test.root | tail -1)"
+OUTPUT_POINTS="$(echo "cout<<cbmsim->Draw(\"TprTdePoint.fX\",\"\")<<endl;" | root -l -b test.root | tail -1)"
+
+if (( OUTPUT_EVENTS != 100 || OUTPUT_POINTS < 500 )); then
+    echo "TEST FAILED. Registered $OUTPUT_POINTS (expected more than 500) points in $OUTPUT_EVENTS (expected 100) events."
+else
+    echo "TEST SUCCESS. Registered $OUTPUT_POINTS points in $OUTPUT_EVENTS events."
+fi
+
+cd $CURRENTDIR
