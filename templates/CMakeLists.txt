@@ -6,7 +6,7 @@
  #                  copied verbatim in the file "LICENSE"                       #
  ################################################################################
 
-Set(MaxTestTime 60)
+Set(MaxTestTime 100)
 
 Add_Test(test_project_template
          ${CMAKE_CURRENT_BINARY_DIR}/test_project_template.sh)
@@ -17,7 +17,7 @@ Add_Test(test_NewDetector
          ${CMAKE_CURRENT_BINARY_DIR}/test_NewDetector.sh)
 Set_Tests_Properties(test_NewDetector PROPERTIES DEPENDS test_project_template)
 Set_Tests_Properties(test_NewDetector PROPERTIES TIMEOUT ${MaxTestTime})
-Set_Tests_Properties(test_NewDetector PROPERTIES PASS_REGULAR_EXPRESSION "TEST SUCC")
+Set_Tests_Properties(test_NewDetector PROPERTIES PASS_REGULAR_EXPRESSION "TEST SUCCESS")
 
 configure_file( ${CMAKE_SOURCE_DIR}/templates/project_template/test_project_template.sh.in
 		${CMAKE_BINARY_DIR}/templates/test_project_template.sh @ONLY)
