@@ -26,6 +26,8 @@ set(INCLUDE_DIRECTORIES
     ${CMAKE_SOURCE_DIR}/base/MQ/policies/Serialization
     ${CMAKE_SOURCE_DIR}/base/MQ/policies/Storage
     ${CMAKE_SOURCE_DIR}/base/MQ/baseMQtools
+    ${CMAKE_SOURCE_DIR}/generators
+    ${CMAKE_SOURCE_DIR}/examples/common/passive
     ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector
     ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/src
     ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/src/devices
@@ -168,6 +170,8 @@ Set(Exe_Names
     ex9-sinkBin
 
     ex9-merger
+
+    run-sim
 )
 
 set(Exe_Source
@@ -180,6 +184,8 @@ set(Exe_Source
     runEx9FileSinkBin.cxx
 
     runEx9Merger.cxx
+
+    runMQSim.cxx
 )
 
 
@@ -195,6 +201,6 @@ ForEach(_file RANGE 0 ${_length})
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES Pixel)
+    Set(DEPENDENCIES Pixel geant321)
     GENERATE_EXECUTABLE()
 EndForEach(_file RANGE 0 ${_length})

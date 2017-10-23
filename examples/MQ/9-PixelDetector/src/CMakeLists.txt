@@ -55,6 +55,7 @@ devices/FairMQEx9TaskProcessor.h
 devices/FairMQEx9TaskProcessor.tpl
 devices/FairMQEx9TaskProcessorBin.h
 devices/FairMQEx9TaskProcessorBin.tpl
+devices/FairMQRunSim.h
 )
 
 set(SRCS
@@ -77,6 +78,7 @@ PixelPoint.cxx
 PixelDigi.cxx
 PixelHit.cxx
 PixelTrack.cxx
+devices/FairMQRunSim.cxx
 )
 
 Set(HEADERS 
@@ -101,6 +103,7 @@ PixelHit.h
 PixelTrack.h
 
 PixelPayload.h
+
 )
 
 Set(LINKDEF PixelLinkDef.h)
