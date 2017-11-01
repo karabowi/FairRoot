@@ -16,6 +16,8 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_SOURCE_DIR}/base/MQ/policies/Serialization
   ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/src
   ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/src/devices
+  ${CMAKE_SOURCE_DIR}/generators
+  ${CMAKE_SOURCE_DIR}/examples/common/passive
   ${CMAKE_SOURCE_DIR}/examples/common/mcstack
 )
 
@@ -42,6 +44,8 @@ devices/PixelFindHitsTask.cxx
 devices/FairMQEx9Merger.cxx
 devices/FairMQEx9FileSink.cxx
 devices/FairMQEx9FileSinkBin.cxx
+
+devices/FairMQSimManager.cxx
 )
 
 Set(NO_DICT_HEADERS
@@ -55,7 +59,8 @@ devices/FairMQEx9TaskProcessor.h
 devices/FairMQEx9TaskProcessor.tpl
 devices/FairMQEx9TaskProcessorBin.h
 devices/FairMQEx9TaskProcessorBin.tpl
-devices/FairMQRunSim.h
+
+devices/FairMQSimManager.h
 )
 
 set(SRCS
@@ -78,7 +83,6 @@ PixelPoint.cxx
 PixelDigi.cxx
 PixelHit.cxx
 PixelTrack.cxx
-devices/FairMQRunSim.cxx
 )
 
 Set(HEADERS 

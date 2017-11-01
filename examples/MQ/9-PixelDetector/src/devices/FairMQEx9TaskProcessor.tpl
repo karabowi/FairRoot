@@ -24,6 +24,7 @@ FairMQEx9TaskProcessor<T>::FairMQEx9TaskProcessor()
   , fOutputChannelName("data-out")
   , fParamChannelName("param")
   , fEventHeader(NULL)
+  , fMCEventHeader(NULL)
   , fInput(NULL)
   , fOutput(NULL)
   , fNewRunId(1)
@@ -87,12 +88,20 @@ bool FairMQEx9TaskProcessor<T>::ProcessData(FairMQParts& parts, int /*index*/)
       // LOG(TRACE) << "got TObject with name \"" << tempObjects[ipart]->GetName() << "\".";
       if ( strcmp(tempObjects.back()->GetName(),"EventHeader.") == 0 )
 	fEventHeader = (FairEventHeader*)(tempObjects.back());
+      if ( strcmp(tempObjects.back()->GetName(),"MCEventHeader.") == 0 )
+	fMCEventHeader = (FairMCEventHeader*)(tempObjects.back());
       else {
 	fInput->Add(tempObjects.back());
       }
     }
   
-  fNewRunId = fEventHeader->GetRunId();
+  // TODO : create fEventHeader from fMCEventHeader, if not there
+
+  if ( fEventHeader )
+    fNewRunId = fEventHeader->GetRunId();
+  else if ( fMCEventHeader )
+    fNewRunId = fMCEventHeader->GetRunID();
+
   
   // LOG(TRACE)<<"got event header with run = " << fNewRunId;
   
@@ -120,12 +129,22 @@ bool FairMQEx9TaskProcessor<T>::ProcessData(FairMQParts& parts, int /*index*/)
   TMessage* messageTCA[10];
   FairMQParts partsOut;
   
-  messageFEH = new TMessage(kMESS_OBJECT);
-  messageFEH->WriteObject(fEventHeader);
-  partsOut.AddPart(NewMessage(messageFEH->Buffer(),
-			      messageFEH->BufferSize(),
-			      [](void* /*data*/, void* hint) { delete (TMessage*)hint;},
-			      messageFEH));
+  if ( fEventHeader ) {
+    messageFEH = new TMessage(kMESS_OBJECT);
+    messageFEH->WriteObject(fEventHeader);
+    partsOut.AddPart(NewMessage(messageFEH->Buffer(),
+                                messageFEH->BufferSize(),
+                                [](void* /*data*/, void* hint) { delete (TMessage*)hint;},
+                                messageFEH));
+  }
+  if ( fMCEventHeader ) {
+    messageFEH = new TMessage(kMESS_OBJECT);
+    messageFEH->WriteObject(fMCEventHeader);
+    partsOut.AddPart(NewMessage(messageFEH->Buffer(),
+                                messageFEH->BufferSize(),
+                                [](void* /*data*/, void* hint) { delete (TMessage*)hint;},
+                                messageFEH));
+  }
   for ( int iobj = 0 ; iobj < fOutput->GetEntries() ; iobj++ ) {
     messageTCA[iobj] = new TMessage(kMESS_OBJECT);
     messageTCA[iobj]->WriteObject(fOutput->At(iobj));
@@ -135,15 +154,15 @@ bool FairMQEx9TaskProcessor<T>::ProcessData(FairMQParts& parts, int /*index*/)
 				messageTCA[iobj]));
   }
 
+  Send(partsOut, fOutputChannelName);
+  fSentMsgs++;
+
   for ( int ipart = 0 ; ipart < tempObjects.size() ; ipart++ )
     {
       if ( tempObjects[ipart] )
         delete tempObjects[ipart];
     }
   tempObjects.clear();
-
-  Send(partsOut, fOutputChannelName);
-  fSentMsgs++;
 
   fInput->Clear();
 

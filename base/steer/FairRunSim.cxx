@@ -72,7 +72,8 @@ FairRunSim::FairRunSim(Bool_t isMaster)
    fRadGrid(kFALSE),
    fMeshList( new TObjArray() ),
    fUserConfig(""),
-   fUserCuts("SetCuts.C")
+  fUserCuts("SetCuts.C"),
+  fGenericRootManager(NULL)
 
 {
   if (fginstance) {
@@ -164,6 +165,9 @@ void FairRunSim::Init()
 
   fApp= new FairMCApplication("Fair","The Fair VMC App",ListOfModules, MatFname);
   fApp->SetGenerator(fGen);
+
+  if ( fGenericRootManager != NULL )
+    fApp->SetRootManager(fGenericRootManager);
 
   // Add a Generated run ID to the FairRunTimeDb
   FairRunIdGenerator genid;

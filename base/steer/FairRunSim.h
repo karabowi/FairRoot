@@ -10,6 +10,7 @@
 
 #include "FairRun.h"                    // for FairRun
 
+#include "FairGenericRootManager.h"
 #include "FairIon.h"                    // for FairIon
 #include "FairMCApplication.h"          // for FairMCApplication
 #include "FairParticle.h"               // for FairParticle
@@ -151,6 +152,9 @@ class FairRunSim : public FairRun
     /**Get beam energy flag */
     Bool_t UseBeamMom() {return fUseBeamMom;}
     void SetFieldContainer();
+
+    void SetRootManager(FairGenericRootManager* rootMan) { fGenericRootManager = rootMan;}
+
   private:
     FairRunSim(const FairRunSim& M);
     FairRunSim& operator= (const  FairRunSim&) {return *this;}
@@ -183,7 +187,7 @@ class FairRunSim : public FairRun
     TObjArray*             fMeshList; //!                          /** radiation grid scoring
     TString                fUserConfig; //!                        /** Macro for geant configuration*/
     TString                fUserCuts; //!                          /** Macro for geant cuts*/
-
+    FairGenericRootManager* fGenericRootManager;
 
     ClassDef(FairRunSim ,2)
 

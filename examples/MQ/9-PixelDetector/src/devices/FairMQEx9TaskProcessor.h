@@ -13,6 +13,7 @@
 
 #include "FairEventHeader.h"
 #include "FairGeoParSet.h"
+#include "FairMCEventHeader.h"
 #include "FairParGenericSet.h"
 
 #include "FairMQDevice.h"
@@ -50,9 +51,10 @@ class FairMQEx9TaskProcessor : public FairMQDevice
 
     static void CustomCleanup(void *data, void *hint);
 
-    FairEventHeader* fEventHeader;
-    TList*           fInput;
-    TList*           fOutput;
+    FairMCEventHeader* fMCEventHeader;
+    FairEventHeader*   fEventHeader;
+    TList*             fInput;
+    TList*             fOutput;
 
     int fNewRunId;
     int fCurrentRunId;

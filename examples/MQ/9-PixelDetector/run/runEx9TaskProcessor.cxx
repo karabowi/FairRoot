@@ -11,10 +11,12 @@
 #include "PixelFindHits.h"
 #include "PixelFindTracks.h"
 #include "PixelFitTracks.h"
+#include "PixelDigitize.h"
 
 // 9-PixelDetector example
 #include "FairMQEx9TaskProcessor.h"
 
+using Digitizer   = FairMQEx9TaskProcessor<PixelDigitize>;
 using HitFinder   = FairMQEx9TaskProcessor<PixelFindHits>;
 using TrackFinder = FairMQEx9TaskProcessor<PixelFindTracks>;
 using TrackFitter = FairMQEx9TaskProcessor<PixelFitTracks>;
@@ -45,6 +47,9 @@ FairMQDevicePtr getDevice(const FairMQProgOptions& config)
   }
   else if ( taskname == "PixelFitTracks" ) {
     return new TrackFitter();
+  }
+  else if ( taskname == "PixelDigitize" ) {
+    return new Digitizer();
   }
 
   return 0;

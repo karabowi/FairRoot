@@ -36,6 +36,4 @@
 #pragma link C++ class PixelPayload::Hit+;
 #pragma link C++ class PixelPayload::Track+;
 
-#pragma link C++ class FairMQRunSim+;
-
 #endif

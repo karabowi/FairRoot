@@ -115,7 +115,6 @@ void PixelDigitize::Exec(Option_t* /*opt*/) {
     Int_t detId = currentPixelPoint->GetDetectorID();    
     TString nodeName = Form("/cave/Pixel%d_%d",detId/256,detId%256);
 
-
     gGeoManager->cd(nodeName.Data());
     TGeoNode* curNode = gGeoManager->GetCurrentNode();
 
@@ -194,6 +193,50 @@ void PixelDigitize::SetParContainers() {
                 // Get GEM digitisation parameter container
                 fDigiPar = static_cast<PixelDigiPar*>(db->getContainer("PixelDigiParameters"));}
     }
+}
+// -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+void PixelDigitize::GetParList(TList* tempList) {
+  fDigiPar = new PixelDigiPar("PixelDigiParameters");
+  tempList->Add(fDigiPar);
+  
+  return;
+}
+// -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+void   PixelDigitize::InitMQ(TList* tempList) {
+  LOG(INFO) << "********************************************** PixelDigitize::InitMQ()" << FairLogger::endl;
+  fDigiPar = (PixelDigiPar*)tempList->FindObject("PixelDigiParameters");
+
+  fFeCols = fDigiPar->GetFECols();
+  fFeRows = fDigiPar->GetFERows();
+  fMaxFEperCol = fDigiPar->GetMaxFEperCol();
+  fPitchX = fDigiPar->GetXPitch();
+  fPitchY = fDigiPar->GetYPitch();
+
+  LOG(INFO) << ">> fFeCols      = " << fFeCols << FairLogger::endl;
+  LOG(INFO) << ">> fFeRows      = " << fFeRows << FairLogger::endl;
+  LOG(INFO) << ">> fMaxFEperCol = " << fMaxFEperCol << FairLogger::endl;
+  LOG(INFO) << ">> fPitchX      = " << fPitchX << FairLogger::endl;
+  LOG(INFO) << ">> fPitchY      = " << fPitchY << FairLogger::endl;
+
+  fDigis = new TClonesArray("PixelDigi",10000);
+
+  return;
+}
+// -------------------------------------------------------------------------
+
+// -------------------------------------------------------------------------
+void   PixelDigitize::ExecMQ(TList* inputList,TList* outputList) {
+  //  LOG(INFO) << "********************************************** PixelDigitize::ExecMQ(" << inputList->GetName() << "," << outputList->GetName() << "), Event " << fTNofEvents << FairLogger::endl;
+  //  LOG(INFO) << "********************************************** PixelDigitize::ExecMQ(), Event " << fTNofEvents << FairLogger::endl;
+  //  LOG(INFO) << "h" << FairLogger::flush;
+  fPoints = static_cast<TClonesArray*>(inputList->FindObject("PixelPoint"));
+  outputList->Add(fDigis);
+  Exec("");
+  return;
 }
 // -------------------------------------------------------------------------
 

@@ -424,7 +424,8 @@ void FairMCApplication::InitMC(const char*, const char*)
   }
   fMC->SetMagField(fxField);
 
-  fRootManager = new FairRootManagerSim();
+  if ( fRootManager == NULL )
+    fRootManager = new FairRootManagerSim();
   //fRootManager->SetDebug(true);
 
   fMC->Init();

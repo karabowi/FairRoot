@@ -21,6 +21,8 @@
 #include "FairMQLogger.h"
 #include "FairMQProgOptions.h"
 
+#include "FairMCEventHeader.h"
+
 using namespace std;
 
 // special class to expose protected TMessage constructor
@@ -95,6 +97,12 @@ void FairMQEx9FileSink::Init()
     else if ( fClassNames[fNObjects].find("FairEventHeader") == 0 ) {
       fOutputObjects            [fNObjects] = new    FairEventHeader();
       fTree->Branch(fBranchNames[fNObjects].c_str(),"FairEventHeader", &fOutputObjects[fNObjects]);
+      foldEventHeader->Add(fOutputObjects[fNObjects]);
+      BranchNameList->AddLast(new TObjString(fBranchNames[fNObjects].c_str()));
+    }
+    else if ( fClassNames[fNObjects].find("FairMCEventHeader") == 0 ) {
+      fOutputObjects            [fNObjects] = new    FairMCEventHeader();
+      fTree->Branch(fBranchNames[fNObjects].c_str(),"FairMCEventHeader", &fOutputObjects[fNObjects]);
       foldEventHeader->Add(fOutputObjects[fNObjects]);
       BranchNameList->AddLast(new TObjString(fBranchNames[fNObjects].c_str()));
     }

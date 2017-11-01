@@ -185,6 +185,8 @@ class FairMCApplication : public TVirtualMCApplication
 
     void AddMeshList ( TObjArray* meshList );
 
+    void SetRootManager(FairGenericRootManager* rootManager) { fRootManager = rootManager; }
+
   private:
     // methods
     Int_t GetIonPdg(Int_t z, Int_t a) const;
