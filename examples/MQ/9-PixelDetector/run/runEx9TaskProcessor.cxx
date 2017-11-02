@@ -26,11 +26,12 @@ namespace bpo = boost::program_options;
 void addCustomOptions(bpo::options_description& options)
 {
   options.add_options()
-    ("task-name",   bpo::value<std::string>()->required()                  ,  "Name of task to run")
-    ("keep-data",   bpo::value<std::string>()                              ,  "Name of data to keep in stream")
-    ("in-channel",  bpo::value<std::string>()->default_value("data-in")   , "input channel name")
+    ("task-name",   bpo::value<std::string>()->required()                , "Name of task to run")
+    ("keep-data",   bpo::value<std::string>()                            , "Name of data to keep in stream")
+    ("in-channel",  bpo::value<std::string>()->default_value("data-in")  , "input channel name")
     ("out-channel", bpo::value<std::string>()->default_value("data-out") , "output channel name")
-    ("par-channel", bpo::value<std::string>()->default_value("param")    , "param channel name");
+    ("par-channel", bpo::value<std::string>()->default_value("param")    , "param channel name")
+    ("static-pars", bpo::value<bool>       ()->default_value(false)       , "static parameters flag");
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& config)

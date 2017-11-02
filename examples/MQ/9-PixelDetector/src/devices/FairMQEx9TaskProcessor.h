@@ -32,9 +32,11 @@ class FairMQEx9TaskProcessor : public FairMQDevice
 
     void SetDataToKeep(std::string tStr) { fDataToKeep = tStr;}
 
-    void SetInputChannelName (std::string tstr) {fInputChannelName = tstr;}
+    void SetInputChannelName (std::string tstr) {fInputChannelName  = tstr;}
     void SetOutputChannelName(std::string tstr) {fOutputChannelName = tstr;}
     void SetParamChannelName (std::string tstr) {fParamChannelName  = tstr;}
+
+    void SetStaticParameters (bool tbool)       {fStaticParameters  = tbool;}
 
   protected:
     bool ProcessData(FairMQParts&, int);
@@ -45,6 +47,8 @@ class FairMQEx9TaskProcessor : public FairMQDevice
     std::string     fInputChannelName;
     std::string     fOutputChannelName;
     std::string     fParamChannelName;
+
+    bool            fStaticParameters;
 
     void UpdateParameters();
     FairParGenericSet* UpdateParameter(FairParGenericSet* thisPar);

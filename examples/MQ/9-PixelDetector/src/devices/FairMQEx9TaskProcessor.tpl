@@ -23,6 +23,7 @@ FairMQEx9TaskProcessor<T>::FairMQEx9TaskProcessor()
   , fInputChannelName("data-in")
   , fOutputChannelName("data-out")
   , fParamChannelName("param")
+  , fStaticParameters(false)
   , fEventHeader(NULL)
   , fMCEventHeader(NULL)
   , fInput(NULL)
@@ -58,7 +59,8 @@ void FairMQEx9TaskProcessor<T>::Init()
   fInputChannelName  = fConfig->GetValue<std::string>("in-channel");
   fOutputChannelName = fConfig->GetValue<std::string>("out-channel");
   fParamChannelName  = fConfig->GetValue<std::string>("par-channel");
-  
+  fStaticParameters  = fConfig->GetValue<bool>       ("static-pars");  
+
   fFairTask = new T();
   fFairTask->SetStreamProcessing(kTRUE);
   fGeoPar = new FairGeoParSet("FairGeoParSet");
@@ -97,23 +99,24 @@ bool FairMQEx9TaskProcessor<T>::ProcessData(FairMQParts& parts, int /*index*/)
   
   // TODO : create fEventHeader from fMCEventHeader, if not there
 
-  if ( fEventHeader )
-    fNewRunId = fEventHeader->GetRunId();
-  else if ( fMCEventHeader )
-    fNewRunId = fMCEventHeader->GetRunID();
-
-  
-  // LOG(TRACE)<<"got event header with run = " << fNewRunId;
-  
-  if(fNewRunId!=fCurrentRunId)
+  if ( fStaticParameters == false || fCurrentRunId == -1 )
     {
-      fCurrentRunId=fNewRunId;
-      UpdateParameters();
-      fFairTask->InitMQ(fParCList);
+      if ( fEventHeader )
+        fNewRunId = fEventHeader->GetRunId();
+      else if ( fMCEventHeader )
+        fNewRunId = fMCEventHeader->GetRunID();
 
-      LOG(INFO) << "Parameters updated, back to ProcessData(" << parts.Size() << " parts!)";
+      // LOG(TRACE)<<"got event header with run = " << fNewRunId;
+
+      if(fNewRunId!=fCurrentRunId)
+        {
+          fCurrentRunId=fNewRunId;
+          UpdateParameters();
+          fFairTask->InitMQ(fParCList);
+
+          LOG(INFO) << "Parameters updated, back to ProcessData(" << parts.Size() << " parts!)";
+        }
     }
-  
   
   // Execute hit finder task
   fOutput->Clear();
@@ -121,7 +124,7 @@ bool FairMQEx9TaskProcessor<T>::ProcessData(FairMQParts& parts, int /*index*/)
   fFairTask->ExecMQ(fInput,fOutput);
   
   if ( !fDataToKeep.empty() ) {
-    objectToKeep = fInput->FindObject(fDataToKeep.c_str());
+    objectToKeep = (fInput->FindObject(fDataToKeep.c_str()))->Clone();
     if ( objectToKeep ) fOutput->Add(objectToKeep);
   }
   
