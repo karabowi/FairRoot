@@ -148,6 +148,8 @@ class FairRootManager : public TObject
     /**Read the tree entry on one branch for a specific entry**/
     void              ReadBranchEvent(const char* BrName, Int_t entry);
 
+    void              CreateRootFolder();
+
     /**Read all entries from input tree(s) with time stamp from current time to dt (time in ns)*/
 
     Int_t             GetRunId();

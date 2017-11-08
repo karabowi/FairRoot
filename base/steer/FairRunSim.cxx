@@ -245,7 +245,9 @@ void FairRunSim::Init()
 
   /**Set the configuration for MC engine*/
   SetMCConfig();
-  fRootManager->WriteFileHeader(fFileHeader);
+
+  if ( fOutname.Length() )
+    fRootManager->WriteFileHeader(fFileHeader);
 
 }
 //_____________________________________________________________________________

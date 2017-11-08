@@ -177,8 +177,15 @@ TFile* FairRootManager::OpenOutFile(TFile* f)
 	       << FairLogger::endl;
     exit(-1);
   }
-  FairRun* fRun = FairRun::Instance();
   /**Check if a simulation run!*/
+  CreateRootFolder();
+  return fOutFile;
+}
+//_____________________________________________________________________________
+
+//_____________________________________________________________________________
+void FairRootManager::CreateRootFolder() {
+  FairRun* fRun = FairRun::Instance();
   if(!fRun->IsAna()) {
     fRootFolder= gROOT->GetRootFolder()->AddFolder("cbmroot", "Main Folder");
     gROOT->GetListOfBrowsables()->Add(fRootFolder);
@@ -186,7 +193,6 @@ TFile* FairRootManager::OpenOutFile(TFile* f)
     fOutFolder= gROOT->GetRootFolder()->AddFolder("cbmout", "Main Output Folder");
     gROOT->GetListOfBrowsables()->Add(fOutFolder);
   }
-  return fOutFile;
 }
 //_____________________________________________________________________________
 

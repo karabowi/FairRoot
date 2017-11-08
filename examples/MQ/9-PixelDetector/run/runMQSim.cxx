@@ -5,10 +5,13 @@
 #include "FairRuntimeDb.h"
 #include "FairModule.h"
 #include "FairCave.h"
-#include "Pixel.h"
 #include "FairPrimaryGenerator.h"
 #include "FairBoxGenerator.h"
 #include "FairParRootFileIo.h"
+#include "FairParAsciiFileIo.h"
+
+#include "Pixel.h"
+#include "PixelDigitize.h"
   
 #include "TROOT.h"
 #include "TRint.h"
@@ -66,6 +69,21 @@ FairMQDevicePtr getDevice(const FairMQProgOptions& config)
 
   run->SetStoreTraj       (false);
 
+  // ---------------------------------------------------
+  if ( 1==0 )
+    {
+      // try to run digi task in the simulation device
+      TString digParFile = tutdir + "/param/pixel_digi.par";
+      FairParAsciiFileIo* parIo1 = new FairParAsciiFileIo();
+      parIo1->open(digParFile.Data(),"in");
+      run->SetFirstParameter(parIo1);
+
+      TObjArray* taskArray = new TObjArray();
+      PixelDigitize* digiTask = new PixelDigitize();
+      taskArray->Add(digiTask);
+      run->SetTaskArray(taskArray);
+    }
+  // ---------------------------------------------------
 
   return run;
 

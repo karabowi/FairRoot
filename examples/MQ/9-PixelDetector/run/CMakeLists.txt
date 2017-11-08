@@ -52,6 +52,8 @@ set(FAIRROOT_BIN_LOCATION  ${CMAKE_BINARY_DIR}/bin)
 
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9.sh.in                
 		${CMAKE_BINARY_DIR}/bin/examples/MQ/9-PixelDetector/startFairMQEx9.sh )
+configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9Simulation.sh.in
+		${CMAKE_BINARY_DIR}/bin/examples/MQ/9-PixelDetector/startFairMQEx9Simulation.sh )
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_2Levels.sh.in           
 		${CMAKE_BINARY_DIR}/bin/examples/MQ/9-PixelDetector/startFairMQEx9_2Levels.sh )
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_3Levels.sh.in           
@@ -85,6 +87,8 @@ set(FAIRROOT_BIN_LOCATION  ${CMAKE_INSTALL_PREFIX}/bin)
 
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9.sh.in      
 		${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9.sh_install )
+configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9Simulation.sh.in
+		${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9Simulation.sh_install )
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_2Levels.sh.in 
 		${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_2Levels.sh_install )
 configure_file( ${CMAKE_SOURCE_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_3Levels.sh.in 
@@ -113,6 +117,9 @@ set(EXAMPLE9_INSTALL_BIN share/fairbase/examples/MQ/9-PixelDetector/bin)
 Install(FILES ${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9.sh_install
         DESTINATION ${EXAMPLE9_INSTALL_BIN}
         RENAME startFairMQEx9.sh PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)
+Install(FILES ${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9Simulation.sh_install
+        DESTINATION ${EXAMPLE9_INSTALL_BIN}
+        RENAME startFairMQEx9Simulation.sh PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)
 Install(FILES ${CMAKE_BINARY_DIR}/examples/MQ/9-PixelDetector/run/scripts/startFairMQEx9_2Levels.sh_install
         DESTINATION ${EXAMPLE9_INSTALL_BIN}
         RENAME startFairMQEx9_2Levels.sh PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ WORLD_READ)

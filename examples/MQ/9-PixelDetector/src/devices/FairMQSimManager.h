@@ -23,6 +23,8 @@
 
 class FairRunSim;
 class TObjArray;
+class FairField;
+class FairParIo;
 class FairPrimaryGenerator;
 
 class FairMQSimManager : public FairMQDevice, public FairGenericRootManager
@@ -52,9 +54,13 @@ class FairMQSimManager : public FairMQDevice, public FairGenericRootManager
     void SetNofEvents       (int64_t nofev)                 { fNofEvents = nofev;};
     void SetTransportName   (std::string str)               { fTransportName = str;};
     void SetMaterials       (std::string str)               { fMaterialsFile = str;};
+    void SetMagneticField   (FairField* field)              { fMagneticField = field;};
     void SetDetectorArray   (TObjArray* array)              { fDetectorArray = array;};
     void SetGenerator       (FairPrimaryGenerator* primGen) { fPrimaryGenerator = primGen;};
     void SetStoreTraj       (bool flag=true)                { fStoreTrajFlag = flag;};
+    void SetTaskArray       (TObjArray* array)              { fTaskArray = array;};
+    void SetFirstParameter  (FairParIo* par)                { fFirstParameter  = par;};
+    void SetSecondParameter (FairParIo* par)                { fSecondParameter = par;};
     // ------ ---------- -------- ------
 
  protected:
@@ -71,9 +77,13 @@ class FairMQSimManager : public FairMQDevice, public FairGenericRootManager
     int64_t               fNofEvents;
     std::string           fTransportName;
     std::string           fMaterialsFile;
+    FairField*            fMagneticField;
     TObjArray*            fDetectorArray;
     FairPrimaryGenerator* fPrimaryGenerator;
     bool                  fStoreTrajFlag;
+    TObjArray*            fTaskArray;
+    FairParIo*            fFirstParameter;    // first (prefered) input for parameters
+    FairParIo*            fSecondParameter;   // second input (used if not found in first input)
     // ------ ---------- -------- ------
 
     void UpdateParameterServer();

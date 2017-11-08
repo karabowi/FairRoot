@@ -28,6 +28,9 @@
 #include "FairPrimaryGenerator.h"
 #include "FairBoxGenerator.h"
 #include "FairParRootFileIo.h"
+#include "FairParSet.h"
+
+#include "FairMCEventHeader.h"
 
 #include "TROOT.h"
 #include "TRint.h"
@@ -43,10 +46,19 @@ using namespace std;
 FairMQSimManager::FairMQSimManager()
   : FairMQDevice()
   , FairGenericRootManager()
-  , fRunSim(NULL)
   , fUpdateChannelName("updateChannel")
+  , fRunSim(NULL)
+  , fNofEvents(1)
+  , fTransportName("TGeant3")
+  , fMaterialsFile("")
+  , fMagneticField(NULL)
+  , fDetectorArray(NULL)
+  , fPrimaryGenerator(NULL)
+  , fStoreTrajFlag(false)
+  , fTaskArray(NULL)
+  , fFirstParameter(NULL)
+  , fSecondParameter(NULL)
 {
-  
 }
 
 void FairMQSimManager::InitTask() 
@@ -55,41 +67,46 @@ void FairMQSimManager::InitTask()
   
   fRunSim->SetRootManager(this);
 
-  Int_t fileId = 0;
-
-  TString outDir = "./";
-  TString outFile;
-  if ( fileId == 0 )  outFile = Form("%s/TEMP_%s.mc.root",
-				     outDir.Data(),
-				     fTransportName.data());
-  else                outFile = Form("%s/TEMP_%s.mc.f%d.root",
-				     outDir.Data(),
-				     fTransportName.data(),
-				     fileId);
- 
-  TString parFile = Form("%s/TEMP_%s.params.root",
-			 outDir.Data(),
-			 fTransportName.data());
+  if ( fFirstParameter || fSecondParameter ) {
+    FairRuntimeDb *rtdb=fRunSim->GetRuntimeDb();
+    if ( fFirstParameter )
+      rtdb->setFirstInput(fFirstParameter);
+    if ( fSecondParameter )
+      rtdb->setSecondInput(fSecondParameter);
+  }
 
   fRunSim->SetName(fTransportName.data());
-  fRunSim->SetOutputFile(outFile);          // Output file
-  //  FairRuntimeDb* rtdb = fRunSim->GetRuntimeDb();
+  FairRootManager::Instance()->CreateRootFolder();
   // ------------------------------------------------------------------------
   
   // -----   Create media   -------------------------------------------------
   fRunSim->SetMaterials(fMaterialsFile.data());
   // ------------------------------------------------------------------------
   
+  // -----   Magnetic field   -------------------------------------------
+  if ( fMagneticField )
+    fRunSim->SetField(fMagneticField);
+  // --------------------------------------------------------------------
+
   // -----   Create geometry   ----------------------------------------------
   for ( int idet = 0 ; idet < fDetectorArray->GetEntries() ; idet++ ) {
     fRunSim->AddModule((FairModule*)(fDetectorArray->At(idet)));
   }
   // ------------------------------------------------------------------------
 
-  fRunSim->SetGenerator(fPrimaryGenerator);
+  if ( fPrimaryGenerator )
+    fRunSim->SetGenerator(fPrimaryGenerator);
   // ------------------------------------------------------------------------
 
   fRunSim->SetStoreTraj(fStoreTrajFlag);
+
+  // -----   Set tasks   ----------------------------------------------------
+  if ( fTaskArray ) {
+    for ( int itask = 0 ; itask < fTaskArray->GetEntries() ; itask++ ) {
+      fRunSim->AddTask((FairTask*)(fTaskArray->At(itask)));
+    }
+  }
+  // ------------------------------------------------------------------------
    
   // -----   Initialize simulation run   ------------------------------------
   fRunSim->Init();
@@ -114,22 +131,16 @@ void FairMQSimManager::UpdateParameterServer()
   
   printf("FairMQSimManager::UpdateParameterServer() (%d containers)\n",rtdb->getListOfContainers()->GetEntries());
 
-  // send run id in order to properly initialize parameters
-  std::string ridString = std::string("RUN") + std::to_string(fRunSim->GetRunId());
-  TObjString* ridRequest = new TObjString(ridString.data());
-  SendObject(ridRequest, fUpdateChannelName);
-  
   // send the parameters to be saved
-  for(const auto&& obj: *rtdb->getListOfContainers())
+  TIter next(rtdb->getListOfContainers());
+  FairParSet* cont;
+  while ((cont=static_cast<FairParSet*>(next())))
     {
-      SendObject(obj,fUpdateChannelName);
+      std::string ridString = std::string("RUNID") + std::to_string(fRunSim->GetRunId()) + std::string("RUNID") + std::string(cont->getDescription());
+      cont->setDescription(ridString.data());
+      SendObject(cont,fUpdateChannelName);
     }
-  
-  // ask the parameter server to save the output file
-  std::string reqString = "SAVE";
-  TObjString* saveRequest = new TObjString(reqString.data());
-  SendObject(saveRequest, fUpdateChannelName);
-  
+
   printf("FairMQSimManager::UpdateParameterServer() finished\n");
 }
 
@@ -212,7 +223,7 @@ void  FairMQSimManager::Fill()
           std::string modifiedBranchName = std::string("#") + ObjStr->GetString().Data() + "#";
           if ( mi.first.find(modifiedBranchName) != std::string::npos || mi.first.find("#all#") != std::string::npos ) 
             {
-              TObject* object   = FairRootManager::Instance()->GetObject(ObjStr->GetString());
+              TObject* object   = (FairRootManager::Instance()->GetObject(ObjStr->GetString()))->Clone();
               TMessage* message = new TMessage(kMESS_OBJECT);
               message->WriteObject(object);
               parts.AddPart(NewMessage(message->Buffer(),

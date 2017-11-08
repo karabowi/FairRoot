@@ -183,52 +183,40 @@ bool ParameterMQServer::ProcessUpdate(FairMQMessagePtr& update, int /*index*/)
   LOG(DEBUG) << "got process update message!";
   ParMQTMessage tm(update->GetData(), update->GetSize());
 
-  LOG(DEBUG) << "---> >>" << tm.GetClass()->GetName() << "<<";
-
   std::string* text;
 
-  if ( strcmp(tm.GetClass()->GetName(),"TObjString") == 0 ) 
+  // get the run id coded in the description of FairParSet
+  FairParGenericSet* newPar = (FairParGenericSet*)tm.ReadObject(tm.GetClass());
+  std::string parDescr = std::string(newPar->getDescription());
+  uint runId = 0;
+  if ( parDescr.find("RUNID") != std::string::npos )
     {
-      TObjString* objstring = (TObjString*)tm.ReadObject(tm.GetClass());
-      if ( objstring->GetString().BeginsWith("RUN") )
-        {
-          int runId = atoi(objstring->GetName()+3); // +3 = ommit first three characters (RUN)
-          LOG(DEBUG) << "Run Id = " << runId;
-          fRtdb->initContainers(runId);
-          text = new string("SUCCESS");
-        }
-      if ( objstring->GetString().BeginsWith("SAVE") )
-        {
-          if (fOutputType == "ROOT" && fOutputName != "") 
-            {
-              Bool_t kParameterMerged = kTRUE;
-              FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
-              parOut->open(fOutputName.data());
-              fRtdb->setOutput(parOut);
-              fRtdb->saveOutput();
-              text = new string("SUCCESS");
-            }
-          else
-            {
-              text = new string("FAIL");
-            }
-        }
+      parDescr.erase(0,parDescr.find("RUNID")+5);
+      runId = atoi(parDescr.data());
+      if ( parDescr.find("RUNID") != std::string::npos )
+        parDescr.erase(0,parDescr.find("RUNID")+5);
+    }
+
+  fRtdb->initContainers(runId);
+
+  newPar->setChanged(true); // trigger writing to file
+  newPar->Print();
+
+  if ( fRtdb->addContainer(newPar) )
+    {
+      text = new string("SUCCESS");
     }
   else
     {
-      FairParGenericSet* newPar = (FairParGenericSet*)tm.ReadObject(tm.GetClass());
-      newPar->setChanged(true); // trigger writing to file
-      newPar->Print();
-
-      if ( fRtdb->addContainer(newPar) )
-        {
-          text = new string("SUCCESS");
-        }
-      else
-        {
-          text = new string("FAIL");
-        }
+      text = new string("FAIL");
     }
+
+  Bool_t kParameterMerged = kTRUE;
+  FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
+  parOut->open(fOutputName.data());
+  fRtdb->setOutput(parOut);
+  fRtdb->saveOutput();
+  fRtdb->closeOutput();
 
   FairMQMessagePtr msg(NewMessage(const_cast<char*>(text->c_str()),
                                   text->length(),
