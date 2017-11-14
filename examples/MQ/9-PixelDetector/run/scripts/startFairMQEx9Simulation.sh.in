@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NOFEVENTS="--nof-events -1"
-NOFSIMULS="--nof-simuls 1"
+NOFEVENTS="--nof-events 1"
+NOFSIMULS="1"
 TRANSPORTNAME="TGeant3"
 TRANSPORT="--transport zeromq"
 WORKDIR="@EXAMPLE9_FILE_LOCATION@"
@@ -22,7 +22,7 @@ case $key in
     shift
     ;;
     -s|--nof-simuls)
-    NOFSIMULS="--nof-simuls $2"
+    NOFSIMULS="$2"
     shift
     ;;
     -g|--transport-name)
@@ -49,8 +49,28 @@ esac
 shift 
 done
 
+case $NOFSIMULS in
+    ''|*[!0-9]*) NOFSIMULS=1 ;;
+    *) ;;
+esac
+
+unameOut=$(uname -s)
+case $unameOut in
+    Linux)     NOFCORES=$(cat /proc/cpuinfo | awk '/^processor/{print $3}');;
+    Darwin)    NOFCORES=$(sysctl -n hw.ncpu);;
+    *)         NOFCORES=1;;
+esac
+
+if (( $NOFSIMULS == 0 )); then
+    NOFSIMULS=1
+fi
+if (( $NOFSIMULS > $NOFCORES )); then
+    echo "$NOFCORES cores detected. Reducing number of parallel samplers to $NOFCORES"
+    NOFSIMULS=$NOFCORES
+fi
+
 if [ "$TRANSPORTNAME" != "TGeant4" ]; then
-    TRANSPORTNAME="TGeant3";
+    TRANSPORTNAME="TGeant3"
 fi
 
 
@@ -102,15 +122,10 @@ SAMPLER+=" --config-key sampler  --mq-config $MQCONFIGFILE"
 SAMPLER+=" $VERBOSE "
 SAMPLER+=" $NOFEVENTS $TRANSPORTNAME $CONTROL"
 
-SAMPLER1=$SAMPLER+" --id processor1"
-SAMPLER2=$SAMPLER+" --id processor2"
-SAMPLER3=$SAMPLER+" --id processor3"
-SAMPLER4=$SAMPLER+" --id processor4"
-SAMPLER5=$SAMPLER+" --id processor5"
-SAMPLER6=$SAMPLER+" --id processor6"
-SAMPLER7=$SAMPLER+" --id processor7"
-SAMPLER8=$SAMPLER+" --id processor8"
-
+for (( i=1 ; i<=$NOFSIMULS ; i++ ))
+do
+    ASAMPLER[i]="$SAMPLER --id sampler$i"
+done
 ########################## start FILESINK
 FILESINK="@EXAMPLE9_BIN_LOCATION@/"
 FILESINK+="ex9-sink $TRANSPORT --in-channel data#all#"
@@ -124,7 +139,8 @@ FILESINK+=" --file-name $OUTPUTFILE"
 ########################## run all
 xterm -geometry 80x50+0+0 -hold -e $SERVER &
 xterm -geometry 80x50+1000+0 -hold -e $FILESINK &
-xterm -geometry 80x50+500+0 -hold -e $SAMPLER1 &
-xterm -geometry 80x50+500+0 -hold -e $SAMPLER2 &
-xterm -geometry 80x50+500+0 -hold -e $SAMPLER3 &
-xterm -geometry 80x50+500+0 -hold -e $SAMPLER4 &
+
+for (( i=1 ; i<=$NOFSIMULS ; i++ ))
+do
+    xterm -geometry 80x50+500+0 -hold -e ${ASAMPLER[i]} &
+done
