@@ -206,7 +206,12 @@ FairWriteoutBuffer* FairMQSimManager::RegisterWriteoutBuffer(TString branchName,
 void  FairMQSimManager::Fill()
 {
   /// Fill the Root tree.
-  LOG(DEBUG) << "called FairMQSimManager::Fill()!!!!";
+  LOG(DEBUG) << "called FairMQSimManager::Fill()!!!!" << FairLogger::endl;
+  if ( !CheckCurrentState(RUNNING) )
+    {
+      fRunSim->StopMCRun();
+    }
+
   TList* branchNameList = FairRootManager::Instance()->GetBranchNameList();
   TObjString* ObjStr;
   
@@ -258,5 +263,6 @@ FairRootManager*    FairMQSimManager::GetFairRootManager() const
 }
 Int_t  FairMQSimManager::GetId() const
 {
+  if ( fRunSim ) return fRunSim->GetRunId();
   return 0;
 }

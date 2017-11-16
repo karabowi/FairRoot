@@ -800,8 +800,15 @@ void FairMCApplication::StopRun()
     fRootManager->CloseOutFile();
   }
   LOG(WARNING) << "StopRun() exiting not safetly oopps !!!@@@!!!"
-	       << FairLogger::endl;
+               << FairLogger::endl;
   exit(0) ;
+}
+
+//_____________________________________________________________________________
+
+void FairMCApplication::StopMCRun()
+{
+  if ( fMC ) fMC->StopRun();
 }
 //_____________________________________________________________________________
 void FairMCApplication::FinishEvent()

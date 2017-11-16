@@ -178,6 +178,9 @@ class FairMCApplication : public TVirtualMCApplication
     virtual void          Stepping();                                       // MC Application
     /** Stop the run*/
     virtual void          StopRun();
+
+    /** Stop the run*/
+    virtual void          StopMCRun();
     /**Define maximum radius for tracking (optional) */
     virtual Double_t      TrackingRmax() const;                             // MC Application
     /** Define maximum z for tracking (optional) */

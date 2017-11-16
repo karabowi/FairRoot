@@ -154,6 +154,7 @@ class FairRunSim : public FairRun
     void SetFieldContainer();
 
     void SetRootManager(FairGenericRootManager* rootMan) { fGenericRootManager = rootMan;}
+    void StopMCRun     ()                                { fApp->StopMCRun(); }
 
   private:
     FairRunSim(const FairRunSim& M);
