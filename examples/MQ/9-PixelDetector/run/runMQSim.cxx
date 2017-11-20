@@ -13,24 +13,27 @@
 #include "Pixel.h"
 #include "PixelDigitize.h"
   
-#include "TROOT.h"
+#include "TRandom.h"
 #include "TRint.h"
+#include "TROOT.h"
+#include "TSystem.h"
 #include "TVirtualMC.h"
 #include "TVirtualMCApplication.h"
-#include "TSystem.h"
-
 
 namespace bpo = boost::program_options;
 
 void addCustomOptions(bpo::options_description& options)
 {
   options.add_options()
+    ("random-seed",     bpo::value<int64_t>    ()->default_value(0)         , "Random seed number")
     ("transport-name",  bpo::value<std::string>()->default_value("TGeant3") , "Transport name")
     ("nof-events",      bpo::value<int64_t>    ()->required()               , "Number of events to simulate");
 }
 
 FairMQDevicePtr getDevice(const FairMQProgOptions& config)
 {
+  gRandom->SetSeed(config.GetValue<int64_t> ("random-seed"));
+
   TString dir = getenv("VMCWORKDIR");
   TString tutdir = dir + "/MQ/9-PixelDetector";
 

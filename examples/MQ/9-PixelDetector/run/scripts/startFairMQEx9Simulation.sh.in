@@ -12,6 +12,8 @@ CONTROL=""
 #CONTROL="--control static --log-color false"
 DATESTRING=`date +%Y%m%d_%H%M%S`
 
+NOFRANDOMNUMBERS=0
+
 while [[ $# > 1 ]]
 do
 key="$1"
@@ -19,6 +21,11 @@ key="$1"
 case $key in
     -n|--nof-events)
     NOFEVENTS="--nof-events $2"
+    shift
+    ;;
+    -r|--random-number)
+    RANDOMNUMBER[NOFRANDOMNUMBERS]="$2"
+    NOFRANDOMNUMBERS=$((NOFRANDOMNUMBERS + 1))
     shift
     ;;
     -s|--nof-simuls)
@@ -73,6 +80,11 @@ if [ "$TRANSPORTNAME" != "TGeant4" ]; then
     TRANSPORTNAME="TGeant3"
 fi
 
+if (( $NOFRANDOMNUMBERS > 0 )); then
+    if (( $NOFRANDOMNUMBERS < $NOFSIMULS )); then
+        echo "The number of random seed set is smaller than the number of parallel simulation!"
+    fi
+fi
 
 CHECK_BEFORE="$(ps -fea | grep Pixel9MQConfig_Simulation.json | grep "transport" | grep "control" | grep -v grep)"
 if [ -n "$CHECK_BEFORE" ];
@@ -122,9 +134,14 @@ SAMPLER+=" --config-key sampler  --mq-config $MQCONFIGFILE"
 SAMPLER+=" $VERBOSE "
 SAMPLER+=" $NOFEVENTS $TRANSPORTNAME $CONTROL"
 
-for (( i=1 ; i<=$NOFSIMULS ; i++ ))
+for (( i=$NOFRANDOMNUMBERS ; i<$NOFSIMULS ; i++ ))
 do
-    ASAMPLER[i]="$SAMPLER --id sampler$i"
+    RANDOMNUMBER[i]=0
+done
+
+for (( i=0 ; i<$NOFSIMULS ; i++ ))
+do
+    ASAMPLER[i]="$SAMPLER --id sampler$i --random-seed ${RANDOMNUMBER[i]}"
 done
 ########################## start FILESINK
 FILESINK="@EXAMPLE9_BIN_LOCATION@/"
@@ -140,7 +157,7 @@ FILESINK+=" --file-name $OUTPUTFILE"
 xterm -geometry 80x50+0+0 -hold -e $SERVER &
 xterm -geometry 80x50+1000+0 -hold -e $FILESINK &
 
-for (( i=1 ; i<=$NOFSIMULS ; i++ ))
+for (( i=0 ; i<$NOFSIMULS ; i++ ))
 do
     xterm -geometry 80x50+500+0 -hold -e ${ASAMPLER[i]} &
 done
