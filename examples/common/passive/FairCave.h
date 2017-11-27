@@ -1,8 +1,8 @@
 /********************************************************************************
  *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *              GNU Lesser General Public Licence (LGPL) version 3,             *  
+ *              This software is distributed under the terms of the             *
+ *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #ifndef Cave_H
@@ -19,12 +19,13 @@ class FairCave : public FairModule
     FairCave();
     virtual ~FairCave();
     virtual void ConstructGeometry();
-
+    FairModule* CloneModule() const;    /// Clone this object (used in MT mode only)
 
   private:
+    FairCave(const FairCave& orig);
+    FairCave& operator=(const FairCave&);
     Double_t world[3];
     ClassDef(FairCave,1) //PNDCaveSD
 };
 
 #endif //Cave_H
-

@@ -1,8 +1,8 @@
 /********************************************************************************
  *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *              GNU Lesser General Public Licence (LGPL) version 3,             *  
+ *              This software is distributed under the terms of the             *
+ *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #ifndef FAIRTUTORIALDET1_H
@@ -79,7 +79,7 @@ class FairTutorialDet1: public FairDetector
     virtual void   PostTrack() {;}
     virtual void   PreTrack() {;}
     virtual void   BeginEvent() {;}
-
+    const FairModule*   CloneModule();
 
   private:
 
@@ -100,6 +100,7 @@ class FairTutorialDet1: public FairDetector
 
     FairTutorialDet1(const FairTutorialDet1&);
     FairTutorialDet1& operator=(const FairTutorialDet1&);
+    FairModule* CloneModule() const;
 
     ClassDef(FairTutorialDet1,1)
 };

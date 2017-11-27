@@ -1,8 +1,8 @@
 /********************************************************************************
  *    Copyright (C) 2014 GSI Helmholtzzentrum fuer Schwerionenforschung GmbH    *
  *                                                                              *
- *              This software is distributed under the terms of the             * 
- *              GNU Lesser General Public Licence (LGPL) version 3,             *  
+ *              This software is distributed under the terms of the             *
+ *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
 #include "FairTutorialDet1.h"
@@ -12,7 +12,7 @@
 #include "FairGeoLoader.h"              // for FairGeoLoader
 #include "FairGeoNode.h"                // for FairGeoNode
 #include "FairGeoVolume.h"              // for FairGeoVolume
-#include "FairRootManager.h"            // for FairRootManager
+#include "FairGenericRootManager.h"            // for FairRootManager
 #include "FairRun.h"                    // for FairRun
 #include "FairRuntimeDb.h"              // for FairRuntimeDb
 #include "FairStack.h"                  // for FairStack
@@ -56,6 +56,29 @@ FairTutorialDet1::FairTutorialDet1(const char* name, Bool_t active)
     fELoss(-1),
     fFairTutorialDet1PointCollection(new TClonesArray("FairTutorialDet1Point"))
 {
+}
+FairTutorialDet1::FairTutorialDet1(const FairTutorialDet1& rhs)
+  : FairDetector(rhs),
+    fTrackID(-1),
+    fVolumeID(-1),
+    fPos(),
+    fMom(),
+    fTime(-1.),
+    fLength(-1.),
+    fELoss(-1),
+    fFairTutorialDet1PointCollection(new TClonesArray("FairTutorialDet1Point"))
+{
+}
+
+FairTutorialDet1& FairTutorialDet1::operator=(const FairTutorialDet1& rhs)
+{
+  // self assignment
+  if (this == &rhs) return *this;
+
+  // base class assignment
+  FairModule::operator=(rhs);
+  return *this;
+
 }
 
 FairTutorialDet1::~FairTutorialDet1()
@@ -129,7 +152,7 @@ void FairTutorialDet1::Register()
       only during the simulation.
   */
 
-  FairRootManager::Instance()->Register("TutorialDetPoint", "TutorialDet",
+  FairGenericRootManager::Instance()->Register("TutorialDetPoint", "TutorialDet",
                                         fFairTutorialDet1PointCollection, kTRUE);
 
 }
@@ -197,5 +220,14 @@ FairTutorialDet1Point* FairTutorialDet1::AddHit(Int_t trackID, Int_t detID,
   return new(clref[size]) FairTutorialDet1Point(trackID, detID, pos, mom,
          time, length, eLoss);
 }
+
+FairModule* FairTutorialDet1::CloneModule() const
+{
+  return new FairTutorialDet1(*this);
+}
+
+
+
+
 
 ClassImp(FairTutorialDet1)
