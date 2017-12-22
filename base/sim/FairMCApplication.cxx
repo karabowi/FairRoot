@@ -488,7 +488,7 @@ void FairMCApplication::FinishRun()
   TObjArray* meshlist  = NULL;
 
   // Only in sequential mode
-  if (fRadGridMan) {
+  /* if (fRadGridMan) { // RK - have to fix this!!!
 
     meshlist = fRadGridMan->GetMeshList();
 
@@ -523,7 +523,7 @@ void FairMCApplication::FinishRun()
 
     gDirectory=savedir;
 
-  }
+    }*/ // RK - have to fix this
 
   // Save histograms with memory and runtime information in the output file
   if (FairRunSim::Instance()->IsRunInfoGenerated()) {
@@ -532,7 +532,7 @@ void FairMCApplication::FinishRun()
 
   if (!fRadGridMan && fRootManager) {
     fRootManager->Write();
-    fRootManager->CloseOutFile();
+    fRootManager->CloseSink();
   }
 
   if ( ! fMC->IsMT() ) {
@@ -614,7 +614,7 @@ TVirtualMCApplication* FairMCApplication::CloneForWorker() const
   // and pass some data from master FairRunSim object
   FairRunSim* workerRun = new FairRunSim(kFALSE);
   workerRun->SetName(fRun->GetName()); // Transport engine
-  workerRun->SetOutputFileName(fRun->GetOutputFileName());
+  workerRun->SetSink(fRun->GetSink());
 
   // Create new  FairMCApplication object on worker
   FairMCApplication* workerApplication = new FairMCApplication(*this);
@@ -636,13 +636,13 @@ void FairMCApplication::InitOnWorker()
   fRun = FairRunSim::Instance();
 
   // Generate per-thread file name
-  TString newFileName = FairRunSim::Instance()->GetOutputFileName();
-  TString tid = "_t";
-  tid += fRootManager->GetInstanceId();
-  newFileName.Insert(newFileName.Index(".root"), tid);
+  //TString newFileName = FairRunSim::Instance()->GetOutputFileName(); // RK have to fix this!!!
+  //TString tid = "_t"; // RK have to fix this!!!
+  //tid += fRootManager->GetInstanceId(); // RK have to fix this!!!
+  //newFileName.Insert(newFileName.Index(".root"), tid); // RK have to fix this!!!
 
   // Open per-thread file
-  FairRunSim::Instance()->SetOutputFile(newFileName.Data());
+  //FairRunSim::Instance()->SetOutputFile(newFileName.Data()); // RK have to fix this!!!
 
   // Cache thread-local gMC
   fMC = gMC;
@@ -805,7 +805,7 @@ void FairMCApplication::StopRun()
   FinishRun();
   if (fRootManager) {
     fRootManager->Write();
-    fRootManager->CloseOutFile();
+    fRootManager->CloseSink();
   }
   LOG(WARNING) << "StopRun() exiting not safetly oopps !!!@@@!!!"
                << FairLogger::endl;
@@ -1081,12 +1081,6 @@ void FairMCApplication::InitGeometry()
   /// save Geo Params in Output file
   if (fRootManager) {
     fRootManager->WriteFolder();
-    TTree* outTree =new TTree(FairRootManager::GetTreeName(), "/cbmroot", 99);
-    fRootManager->TruncateBranchNames(outTree, "cbmroot");
-    fRootManager->SetOutTree(outTree);
-
-    // create other branches not managed by folder
-    fRootManager->CreatePersistentBranchesAny();
   }
 
   // Get static thread local svList
