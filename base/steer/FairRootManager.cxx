@@ -450,6 +450,20 @@ Bool_t FairRootManager::AllDataProcessed()
   return kTRUE;
 }
 
+void FairRootManager::FixFolderConsistency() {
+  TFolder* oldRootFolder = (TFolder*)gROOT->GetRootFolder()->FindObjectAny("cbmroot");
+
+  if ( oldRootFolder == fRootFolder )
+    LOG(INFO) << "addresses of the ROOT's folder (" << oldRootFolder << ") and fRootFolder (" << fRootFolder << ") are the same" << FairLogger::endl;
+  else {
+    LOG(INFO) << "addresses of the ROOT's folder (" << oldRootFolder << ") and fRootFolder (" << fRootFolder << ") are NOT the same" << FairLogger::endl;
+
+    gROOT->GetRootFolder()->RecursiveRemove(oldRootFolder);
+    gROOT->GetRootFolder()->Add(fRootFolder);
+    gROOT->GetListOfBrowsables()->Add(fRootFolder);
+  }
+}
+
 //_____________________________________________________________________________
 void FairRootManager::Fill()
 {

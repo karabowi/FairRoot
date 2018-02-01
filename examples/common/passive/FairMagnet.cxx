@@ -93,6 +93,11 @@ void FairMagnet::ConstructASCIIGeometry()
   par->setInputVersion(fRun->GetRunId(),1);
 }
 
+FairModule* FairMagnet::CloneModule() const
+{
+  return new FairMagnet(*this);
+}
+
 ClassImp(FairMagnet)
 
 

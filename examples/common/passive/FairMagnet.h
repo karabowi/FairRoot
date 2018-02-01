@@ -25,6 +25,7 @@ class FairMagnet : public FairModule
     Bool_t CheckIfSensitive(std::string name);
     ClassDef(FairMagnet,1)
 
+    FairModule* CloneModule() const;
 };
 
 #endif //MAGNET_H

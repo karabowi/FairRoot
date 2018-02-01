@@ -1005,6 +1005,8 @@ void FairMCApplication::InitGeometry()
 {
   LOG(INFO) << "FairMCApplication::InitGeometry: "
     << fRootManager->GetInstanceId() << FairLogger::endl;
+
+  fRootManager->FixFolderConsistency();
   
   //ToBeDone
   // Recently the InitGeometry is called twice from the G4VMC, This is a work around tell the problem get fixed in G4VMC
@@ -1141,8 +1143,19 @@ void FairMCApplication::InitGeometry()
     }
   } // end off loop Fill sensitive volumes
 
-  fGeometryIsInitialized=kTRUE;
+                  /// save Geo Params in Output file
+  if (fRootManager) {
+    fRootManager->WriteFolder();
+    TTree* outTree =new TTree(FairRootManager::GetTreeName(), "/cbmroot", 99);
 
+    fRootManager->TruncateBranchNames(outTree, "cbmroot");
+    fRootManager->SetOutTree(outTree);
+    // create other branches not managed by folder
+    fRootManager->CreatePersistentBranchesAny();
+  }
+
+  LOG(INFO) << "finished the InitGeometry()" << FairLogger::endl;fGeometryIsInitialized=kTRUE;
+  fGeometryIsInitialized=kTRUE;
 }
 
 //_____________________________________________________________________________

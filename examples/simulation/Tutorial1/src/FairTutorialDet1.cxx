@@ -26,6 +26,7 @@
 #include "TClonesArray.h"               // for TClonesArray
 #include "TList.h"                      // for TListIter, TList (ptr only)
 #include "TObjArray.h"                  // for TObjArray
+#include "TRefArray.h"
 #include "TString.h"                    // for TString
 #include "TVirtualMC.h"                 // for TVirtualMC
 #include "TVirtualMCStack.h"            // for TVirtualMCStack
@@ -96,6 +97,17 @@ void FairTutorialDet1::Initialize()
   FairRuntimeDb* rtdb= FairRun::Instance()->GetRuntimeDb();
   FairTutorialDet1GeoPar* par=(FairTutorialDet1GeoPar*)(rtdb->getContainer("FairTutorialDet1GeoPar"));
 */
+  if (fNbOfVolumes > 0) return;
+
+  if(!svList) { svList=new TRefArray(); }
+  FairVolume* tut1 = new FairVolume( "tutdet1", fNbOfVolumes++);
+  tut1->setMCid(2);
+  tut1->SetModule(this);
+  svList->Add(tut1);
+  FairVolume* tut2 = new FairVolume( "tutdet2", fNbOfVolumes++);
+  tut2->setMCid(3);
+  tut2->SetModule(this);
+  svList->Add(tut2);
 }
 
 Bool_t  FairTutorialDet1::ProcessHits(FairVolume* vol)
@@ -152,7 +164,7 @@ void FairTutorialDet1::Register()
       only during the simulation.
   */
 
-  FairGenericRootManager::Instance()->Register("TutorialDetPoint", "TutorialDet",
+  FairRootManager::Instance()->Register("TutorialDetPoint", "TutorialDet",
                                         fFairTutorialDet1PointCollection, kTRUE);
 
 }
@@ -223,7 +235,8 @@ FairTutorialDet1Point* FairTutorialDet1::AddHit(Int_t trackID, Int_t detID,
 
 FairModule* FairTutorialDet1::CloneModule() const
 {
-  return new FairTutorialDet1(*this);
+  FairTutorialDet1* temp = new FairTutorialDet1(*this);
+  return temp;
 }
 
 

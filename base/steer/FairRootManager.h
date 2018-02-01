@@ -259,6 +259,8 @@ class FairRootManager : public TObject
     /**public Members for multi-threading */
     Int_t  GetInstanceId() const { return fId; }
 
+    void FixFolderConsistency();
+
   private:
 
     // helper struct since std::pair has problems with type_info
