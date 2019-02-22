@@ -9,6 +9,7 @@
 If(GEANT3_FOUND)
   add_subdirectory(common/passive)
   add_subdirectory(common/mcstack)
+  add_subdirectory(common/gconfig)
 
   add_subdirectory(simulation/Tutorial1)
   add_subdirectory(simulation/Tutorial2)
