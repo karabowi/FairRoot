@@ -18,6 +18,7 @@ void run_sim_sep(Int_t fileId, Int_t nEvents=1000, TString mcEngine="TGeant3")
 
   // create Instance of Run Manager class
   FairRunSim *fRun = new FairRunSim();
+  fRun->SetSimulationConfig(new FairRootSimConfig());
   
   // set the MC version used
   // ------------------------

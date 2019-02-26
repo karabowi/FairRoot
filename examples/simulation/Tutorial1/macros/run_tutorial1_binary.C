@@ -19,6 +19,7 @@ using namespace std;
 #include "FairPrimaryGenerator.h"
 #include "FairParRootFileIo.h"
 #include "FairSystemInfo.h"
+#include "FairRootSimConfig.h"
 #endif
 
 void run_tutorial1_main(const FairSimConfig& config);
@@ -73,6 +74,7 @@ void run_tutorial1_main(const FairSimConfig& config)
 
     // -----   Create simulation run   ----------------------------------------
     FairRunSim run;
+    run.SetSimulationConfig(new FairRootSimConfig());
     run.SetName(config.GetEngine());            // Transport engine
     run.SetIsMT(config.IsMultiThreaded());      // Multi-threading mode (Geant4 only)
     run.SetSink(new FairRootFileSink(outFile)); // Output file

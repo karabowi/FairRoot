@@ -52,6 +52,7 @@ void run_rutherford(Int_t nEvents = 10, TString mcEngine="TGeant4", Bool_t isMT=
 
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
+  run->SetSimulationConfig(new FairRootSimConfig());
   run->SetName(mcEngine);              // Transport engine
   run->SetIsMT(isMT);                  // Multi-threading mode (Geant4 only)
   run->SetSink(new FairRootFileSink(outFile));          // Output file

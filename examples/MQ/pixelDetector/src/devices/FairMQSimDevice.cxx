@@ -22,6 +22,7 @@
 
 #include "FairMCEventHeader.h"
 #include "FairRootManager.h"
+#include "FairRootSimConfig.h"
 #include "FairRunSim.h"
 #include "FairRuntimeDb.h"
 
@@ -64,6 +65,7 @@ FairMQSimDevice::FairMQSimDevice()
 void FairMQSimDevice::InitTask() 
 {
   fRunSim = new FairRunSim();
+  fRunSim->SetSimulationConfig(new FairRootSimConfig());
 
   fRunSim->SetSink(fSink);
 

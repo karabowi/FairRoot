@@ -50,6 +50,7 @@ void run_rad(Int_t nEvents = 100, TString mcEngine="TGeant3")
  
   // -----   Create simulation run   ----------------------------------------
   FairRunSim* run = new FairRunSim();
+  run->SetSimulationConfig(new FairRootSimConfig());
   run->SetName(mcEngine);              // Transport engine
   run->SetSink(new FairRootFileSink(outFile));          // Output file
   FairRuntimeDb* rtdb = run->GetRuntimeDb();

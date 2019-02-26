@@ -14,6 +14,8 @@ Set(INCLUDE_DIRECTORIES
   ${CMAKE_SOURCE_DIR}/examples/simulation/Tutorial1/src
   ${CMAKE_SOURCE_DIR}/examples/common/mcstack
   ${CMAKE_SOURCE_DIR}/examples/common/passive
+  ${CMAKE_SOURCE_DIR}/examples/common/gconfig
+  ${CMAKE_SOURCE_DIR}/fairtools/MCConfigurator
   ${CMAKE_SOURCE_DIR}/generators
   ${CMAKE_SOURCE_DIR}/base/sim/fastsim
   ${FairLogger_INCDIR}
@@ -67,7 +69,7 @@ ForEach(_file RANGE 0 ${_length})
   List(GET Exe_Source ${_file} _src)
   Set(EXE_NAME ${_name})
   Set(SRCS ${_src})
-  Set(DEPENDENCIES Tutorial1 Passive Gen ${FairLogger_LIBRARIES})
+  Set(DEPENDENCIES Tutorial1 Passive Gen ${FairLogger_LIBRARIES} GConfig)
   GENERATE_EXECUTABLE()
 EndForEach(_file RANGE 0 ${_length})
 

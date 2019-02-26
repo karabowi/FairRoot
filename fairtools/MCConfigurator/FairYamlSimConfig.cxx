@@ -67,35 +67,110 @@ void FairYamlSimConfig::SetupGeant3() {
             = new  TGeant3("C++ Interface to Geant3");
     }
 
-    if (fYamlConfig["G3_TRIG"])
-        geant3->SetTRIG(fYamlConfig["G3_TRIG"].as<int>());
-    if (fYamlConfig["G3_SWIT"]) {
-        std::vector<int> intVect = fYamlConfig["G3_SWIT"].as<std::vector<int>>();
-        if ( intVect.size() != 2 )
-            LOG(fatal) << "FairSetupGeant3: expecting 2 integers to setup G3_SWIT";
-        geant3->SetSWIT(intVect[0], intVect[1]);
+    if (fYamlConfig["G3_ABAN"])
+        geant3->SetABAN(fYamlConfig["G3_ABAN"].as<int>());
+    if (fYamlConfig["G3_ANNI"])
+        geant3->SetANNI(fYamlConfig["G3_ANNI"].as<int>());
+    if (fYamlConfig["G3_AUTO"])
+        geant3->SetAUTO(fYamlConfig["G3_AUTO"].as<int>());
+    if (fYamlConfig["G3_BOMB"])
+        geant3->SetBOMB(fYamlConfig["G3_BOMB"].as<float>());
+    if (fYamlConfig["G3_BREM"])
+        geant3->SetBREM(fYamlConfig["G3_BREM"].as<int>());
+    if (fYamlConfig["G3_CKOV"])
+        geant3->SetCKOV(fYamlConfig["G3_CKOV"].as<int>());
+    if (fYamlConfig["G3_COMP"])
+        geant3->SetCOMP(fYamlConfig["G3_COMP"].as<int>());
+    if (fYamlConfig["G3_CUTS"]) {
+        if ( !fYamlConfig["G3_CUTS"].IsSequence() )
+            LOG(fatal) << "FairYamlSimConfig::SetupGeant3() G3_CUTS needs 11 or 16 values.";
+        std::vector<float> floatVect = fYamlConfig["G3_CUTS"].as<std::vector<float>>();
+        if ( floatVect.size() != 11 && floatVect.size() != 16 )
+            LOG(fatal) << "FairYamlSimConfig::SetupGeant3() G3_CUTS need 11 or 16 float values.";
+        geant3->SetCUTS(floatVect[0], floatVect[1], floatVect[2],
+                        floatVect[3], floatVect[4], floatVect[5],
+                        floatVect[6], floatVect[7],
+                        floatVect[8], floatVect[9], floatVect[10],
+                        (floatVect.size()==11?NULL:&floatVect[11]));
     }
+    if (fYamlConfig["G3_ECut"])
+        geant3->SetECut(fYamlConfig["G3_ECut"].as<float>());
+    if (fYamlConfig["G3_DCAY"])
+        geant3->SetDCAY(fYamlConfig["G3_DCAY"].as<int>());
     if (fYamlConfig["G3_DEBU"]) {
-        std::vector<int> intVect = fYamlConfig["G3_DEBU"].as<std::vector<int>>();
-        if ( intVect.size() != 3 )
-            LOG(fatal) << "FairSetupGeant3: expecting 3 integers to setup G3_DEBU";
-        geant3->SetDEBU(intVect[0], intVect[1], intVect[2]);
+        if ( !fYamlConfig["G3_DEBU"].IsSequence() ) {
+            geant3->SetDEBU(fYamlConfig["G3_DEBU"].as<int>());
+        }
+        else {
+            std::vector<int> defVect = {1,999,1};
+            std::vector<int> intVect = fYamlConfig["G3_DEBU"].as<std::vector<int>>();
+            for ( int ipos = intVect.size() ; ipos < defVect.size() ; ipos++ ) { // fill up default values in case needed
+                intVect.push_back(defVect[ipos]);
+            }
+            geant3->SetDEBU(intVect[0], intVect[1], intVect[2]);
+        }
     }
+    if (fYamlConfig["G3_DRAY"])
+        geant3->SetDRAY(fYamlConfig["G3_DRAY"].as<int>());
+    if (fYamlConfig["G3_ERAN"]) {
+        if ( !fYamlConfig["G3_ERAN"].IsSequence() ) {
+            geant3->SetDEBU(fYamlConfig["G3_ERAN"].as<float>());
+        }
+        else {
+            std::vector<float> defVect   = {1.e-5,1.e4,90.};
+            std::vector<float> floatVect = fYamlConfig["G3_ERAN"].as<std::vector<float>>();
+            for ( int ipos = floatVect.size() ; ipos < defVect.size() ; ipos++ ) { // fill up default values in case needed
+                floatVect.push_back(defVect[ipos]);
+            }
+            geant3->SetERAN(floatVect[0], floatVect[1], (int)(floatVect[2]));
+        }
+    }
+    if (fYamlConfig["G3_HADR"])
+        geant3->SetHADR(fYamlConfig["G3_HADR"].as<int>());
+    if (fYamlConfig["G3_KINE"]) {
+        if ( !fYamlConfig["G3_KINE"].IsSequence() ) {
+            geant3->SetKINE(fYamlConfig["G3_KINE"].as<int>());
+        }
+        else {
+            std::vector<float> defVect(10,0.0);  // 10 default values
+            std::vector<float> floatVect = fYamlConfig["G3_KINE"].as<std::vector<float>>(); // up to 11 values
+            for ( int ipos = floatVect.size()-1 ; ipos < defVect.size() ; ipos++ ) { // first one has no default
+                floatVect.push_back(defVect[ipos]);
+            }
+            geant3->SetKINE((int)(floatVect[0]), floatVect[1], floatVect[2],
+                            floatVect[3], floatVect[4],
+                            floatVect[5], floatVect[6], floatVect[7],
+                            floatVect[8], floatVect[9], floatVect[10]);
+        }
+    }
+    if (fYamlConfig["G3_LOSS"])
+        geant3->SetLOSS(fYamlConfig["G3_LOSS"].as<int>());
+    if (fYamlConfig["G3_MULS"])
+        geant3->SetMULS(fYamlConfig["G3_MULS"].as<int>());
+    if (fYamlConfig["G3_MUNU"])
+        geant3->SetMUNU(fYamlConfig["G3_MUNU"].as<int>());
+    if (fYamlConfig["G3_OPTI"])
+        geant3->SetOPTI(fYamlConfig["G3_OPTI"].as<int>());
+    if (fYamlConfig["G3_PAIR"])
+        geant3->SetPAIR(fYamlConfig["G3_PAIR"].as<int>());
+    if (fYamlConfig["G3_PFIS"])
+        geant3->SetPFIS(fYamlConfig["G3_PFIS"].as<int>());
+    if (fYamlConfig["G3_PHOT"])
+        geant3->SetPHOT(fYamlConfig["G3_PHOT"].as<int>());
     if (fYamlConfig["G3_RAYL"])
         geant3->SetRAYL(fYamlConfig["G3_RAYL"].as<int>());
     if (fYamlConfig["G3_STRA"])
         geant3->SetSTRA(fYamlConfig["G3_STRA"].as<int>());
-    if (fYamlConfig["G3_AUTO"])
-        geant3->SetAUTO(fYamlConfig["G3_AUTO"].as<int>());
-    if (fYamlConfig["G3_ABAN"])
-        geant3->SetABAN(fYamlConfig["G3_ABAN"].as<int>());
-    if (fYamlConfig["G3_OPTI"])
-        geant3->SetOPTI(fYamlConfig["G3_OPTI"].as<int>());
-    if (fYamlConfig["G3_ERAN"])
-        geant3->SetERAN(fYamlConfig["G3_ERAN"].as<double>());
-    if (fYamlConfig["G3_CKOV"])
-        geant3->SetCKOV(fYamlConfig["G3_CKOV"].as<int>());
-
+    if (fYamlConfig["G3_SWIT"]) {
+        if ( !fYamlConfig["G3_SWIT"].IsSequence() )
+            geant3->SetSWIT(fYamlConfig["G3_SWIT"].as<int>());
+        else {
+            std::vector<int> intVect = fYamlConfig["G3_SWIT"].as<std::vector<int>>();
+            geant3->SetSWIT(intVect[0], intVect[1]);
+        }
+    }
+    if (fYamlConfig["G3_TRIG"])
+        geant3->SetTRIG(fYamlConfig["G3_TRIG"].as<int>());
 }
 
 //_____________________________________________________________________________
