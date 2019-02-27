@@ -39,7 +39,7 @@ FairYamlSimConfig.cxx
 )
 
 Set(LINKDEF MCConfiguratorLinkDef.h)
-Set(DEPENDENCIES Base FairTools geant321 geant4vmc yaml-cpp FairFastSim)
+Set(DEPENDENCIES Base FairTools geant321 geant4vmc yaml-cpp Pythia6 FairFastSim)
 Set(LIBRARY_NAME MCConfigurator)
 
 GENERATE_LIBRARY()
