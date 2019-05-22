@@ -38,7 +38,8 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
-  ${SIMPATH}/lib/
+  ${Geant4_LIBRARY_DIR}
+  ${Geant4VMC_LIBRARY_DIR}
 )
 
 Link_Directories(${LINK_DIRECTORIES})

@@ -307,6 +307,7 @@ class FairMCApplication : public TVirtualMCApplication
 
     FairRunInfo fRunInfo;//!
     Bool_t      fGeometryIsInitialized;
+    Bool_t      fMonitorMCStepping;
 
     static FairMCApplication* fgMasterInstance;
 };

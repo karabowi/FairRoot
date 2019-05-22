@@ -34,6 +34,8 @@
 #include "TString.h"
 #include "TTask.h"
 
+#include "TVirtualMC.h"
+
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -62,6 +64,8 @@ FairMonitor::FairMonitor()
   , fTaskMap()
   , fObjectPos()
   , fTaskPos()
+  , fStepCounter(0)
+  , fNumberOfMains(0)
 {
 }
 //_____________________________________________________________________________
@@ -643,7 +647,8 @@ void FairMonitor::StoreHistograms(TFile* sinkFile)
     thist->SetBins(thist->GetEntries(),0,thist->GetEntries());
     thist->Write();
   }
-  fCanvas->Write();
+  if ( fCanvas )
+    fCanvas->Write();
 
   if ( histoFile != sinkFile ) {
     histoFile->Close();
@@ -727,6 +732,178 @@ void FairMonitor::AnalyzeObjectMap(TTask* tempTask) {
       AnalyzeObjectMap(subTask);
   }
 
+}
+//_____________________________________________________________________________
+
+//_____________________________________________________________________________
+void FairMonitor::RecordMCStepping() {
+    if ( !fRunMonitor ) return;
+
+    fStepCounter++;
+    auto stack=gMC->GetStack();
+    assert(stack);
+    fTrackset.insert(stack->GetCurrentTrackNumber());
+    fPdgset.insert(gMC->TrackPid());
+    int copyNo;
+    auto id = gMC->CurrentVolID(copyNo);
+    if (fVolumeToSteps.find(id) == fVolumeToSteps.end()){
+      fVolumeToSteps.insert(std::pair<int, int>(id, 1));
+    }
+    else {
+      fVolumeToSteps[id]++;
+    }
+    if (fVolumeToStepsGlobal.find(id) == fVolumeToStepsGlobal.end()){
+      fVolumeToStepsGlobal.insert(std::pair<int, int>(id, 1));
+      fVolumeToTimeGlobal.insert(std::pair<int, double>(id, 0.));
+    }
+    else {
+      fVolumeToStepsGlobal[id]++;
+    }
+    if (fIdToVolName.find(id) == fIdToVolName.end()) {
+      fIdToVolName.insert(std::pair<int, char const*>(id, gMC->CurrentVolName()));
+    }
+
+    int mainId = -1;
+    if ( fVolumeToMain.find(id) == fVolumeToMain.end() ) { // id seen for the first time
+        // get main name - second name in path
+        TString path = gMC->CurrentVolPath();
+        path.Remove(0,1); // remove '/'
+        path.Remove(0,path.First('/')+1); // remove "cave_1/"
+        if ( path.First('/') != -1 )
+            path.Remove(path.First('/'),path.Length()); // remove from first '/' till the end
+        if ( fNameToMain.find(path) == fNameToMain.end() ) { // main not yet known
+            fMainToSteps.insert(std::pair<int, int> (fNameToMain.size(),0));
+            fMainToTime.insert(std::pair<int, double> (fNameToMain.size(),0.));
+            fMainToName.insert(std::pair<int, TString>(fNameToMain.size(),path)); // insert main to name converter
+            fNameToMain.insert(std::pair<TString, int>(path,fNameToMain.size())); // insert name to main converter
+        }
+        mainId = fNameToMain[path]; // get mainId
+        fVolumeToMain.insert(std::pair<int, int>(id, mainId)); // insert id to mainId converter
+    }
+    else {
+        mainId = fVolumeToMain[id];
+    }
+    fMainToSteps[mainId]++;
+
+    // to monitor time
+    /*    typedef std::map<TString, TStopwatch>::iterator ttMapIter;
+
+    ttMapIter itt = fTimerMap.find(Form("%d",id));
+    if ( itt == fTimerMap.end() ) {
+        fTimerMap.insert(std::pair<TString, TStopwatch> (Form("%d",id),TStopwatch()));
+    }
+    fTimerMap[Form("%d",id)].Start();*/
+    fStopWatch.Start();
+}
+//_____________________________________________________________________________
+
+//_____________________________________________________________________________
+void FairMonitor::FinishMCStepping() {
+    auto stack=gMC->GetStack();
+    assert(stack);
+    int copyNo;
+    auto id = gMC->CurrentVolID(copyNo);
+    int mainId = fVolumeToMain[id];
+
+    /*    typedef std::map<TString, TStopwatch>::iterator ttMapIter;
+
+    ttMapIter itt = fTimerMap.find(Form("%d",id));
+    if ( itt == fTimerMap.end() ) {
+        LOG(info) << "FairMonitor::StopTimer() called without matching StartTimer()";
+        return;
+    }
+    //  itt->second
+    fTimerMap[Form("%d",id)].Stop();
+
+    Double_t time = fTimerMap[Form("%d",id)].RealTime();
+*/
+    fStopWatch.Stop();
+    Double_t time = fStopWatch.RealTime();
+
+    fVolumeToTimeGlobal[id] = fVolumeToTimeGlobal[id] + time;
+    fMainToTime[mainId]    = fMainToTime[mainId] + time;
+
+}
+//_____________________________________________________________________________
+
+//_____________________________________________________________________________
+void FairMonitor::FlushMCStepping() {
+    if ( !fRunMonitor ) return;
+
+    std::cerr << "did " << fStepCounter << " steps \n";
+    std::cerr << "transported " << fTrackset.size() << " different tracks \n";
+    std::cerr << "transported " << fPdgset.size() << " different types \n";
+    // summarize steps per volume
+    for (auto& p : fVolumeToSteps) {
+        std::cout << " VolName " << fIdToVolName[p.first] << " COUNT " << p.second << "\n";
+    }
+    // for (auto& p : fMainToSteps) {
+    //     std::cout << " MainName " << fMainToName[p.first] << " COUNT " << p.second << "\n";
+    // }
+    fStepCounter = 0;
+    fTrackset.clear();
+    fPdgset.clear();
+    fVolumeToSteps.clear();
+}
+//_____________________________________________________________________________
+
+//_____________________________________________________________________________
+void FairMonitor::StoreMCStepping() {
+    if ( !fRunMonitor ) return;
+
+    TFile* prevFile = gFile;
+
+    TFile* outFile = NULL;
+    if ( fOutputFileName.Length() > 1 && fOutputFileName != gFile->GetName() ) {
+        outFile = TFile::Open(fOutputFileName,"recreate");
+    }
+
+    gFile->mkdir("MonitorResults");
+    gFile->cd("MonitorResults");
+
+    TH1F* stepCountHistogram = new TH1F("stepCountHistogram","Step logger results;volume number;number of steps",fVolumeToStepsGlobal.size(),0.5,fVolumeToStepsGlobal.size()+0.5);
+    uint binNumber = 0;
+    for (auto& p : fVolumeToStepsGlobal) {
+        std::cout << " VolName " << fIdToVolName[p.first] << " COUNT " << p.second << "\n";
+        stepCountHistogram->SetBinContent(++binNumber,p.second);
+        stepCountHistogram->GetXaxis()->SetBinLabel  (  binNumber,fIdToVolName[p.first]);
+    }
+    stepCountHistogram->DrawClone();
+    stepCountHistogram->Write();
+
+    TH1F* stepTimerHistogram = new TH1F("stepTimerHistogram","Step logger results;volume number;real time [s]",fVolumeToStepsGlobal.size(),0.5,fVolumeToStepsGlobal.size()+0.5);
+    binNumber = 0;
+    for (auto& p : fVolumeToTimeGlobal) {
+        stepTimerHistogram->SetBinContent(++binNumber,p.second);
+        stepTimerHistogram->GetXaxis()->SetBinLabel  (  binNumber,fIdToVolName[p.first]);
+    }
+    stepTimerHistogram->DrawClone();
+    stepTimerHistogram->Write();
+
+    TH1F* mainCountHistogram = new TH1F("mainCountHistogram","Main logger results;volume number;number of mains",fMainToName.size(),0.5,fMainToName.size()+0.5);
+    binNumber = 0;
+    for (auto& p : fMainToSteps ) {
+        mainCountHistogram->SetBinContent(++binNumber,p.second);
+        mainCountHistogram->GetXaxis()->SetBinLabel  (  binNumber,fMainToName[p.first]);
+    }
+    mainCountHistogram->DrawClone();
+    mainCountHistogram->Write();
+
+    TH1F* mainTimerHistogram = new TH1F("mainTimerHistogram","Main logger results;volume number;real time [s]",fMainToName.size(),0.5,fMainToName.size()+0.5);
+    binNumber = 0;
+    for (auto& p : fMainToTime) {
+         mainTimerHistogram->SetBinContent(++binNumber,p.second);
+         mainTimerHistogram->GetXaxis()->SetBinLabel  (  binNumber,fMainToName[p.first]);
+     }
+     mainTimerHistogram->DrawClone();
+     mainTimerHistogram->Write();
+
+    if ( outFile ) {
+        outFile->Close();
+        delete outFile;
+    }
+
+    gDirectory = prevFile;
 }
 //_____________________________________________________________________________
 

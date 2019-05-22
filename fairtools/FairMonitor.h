@@ -18,6 +18,7 @@
 
 #include <list>
 #include <map>
+#include <set>
 
 #include "TNamed.h"
 #include "TStopwatch.h"
@@ -67,6 +68,11 @@ class FairMonitor : public TNamed
 
   TList* GetHistList() { return fHistList; }
 
+  void RecordMCStepping();
+  void FinishMCStepping();
+  void FlushMCStepping();
+  void StoreMCStepping();
+  
   void StoreHistograms(TFile* sinkFile);
 
   private:
@@ -85,6 +91,8 @@ class FairMonitor : public TNamed
     std::map<TString, TStopwatch> fTimerMap;
     std::map<TString, Int_t> fMemoryMap;
 
+    TStopwatch fStopWatch;
+    
     TList* fHistList;
     TCanvas* fCanvas;
 
@@ -105,6 +113,21 @@ class FairMonitor : public TNamed
     std::map<TString, std::pair<Double_t, Double_t> > fObjectPos;
     std::map<TString, std::pair<Double_t, Double_t> > fTaskPos;
 
+    Int_t fStepCounter;
+    std::set<int> fTrackset;
+    std::set<int> fPdgset;
+    std::map<int, int> fVolumeToSteps;
+    std::map<int, int> fVolumeToStepsGlobal;
+    std::map<int, double> fVolumeToTimeGlobal;
+    std::map<int, char const*> fIdToVolName;
+
+    int fNumberOfMains;
+    std::map<int, int> fVolumeToMain;
+    std::map<int, TString> fMainToName;
+    std::map<TString, int> fNameToMain;
+    std::map<int, int> fMainToSteps;
+    std::map<int, double> fMainToTime;
+    
     void GetTaskMap(TTask* tempTask);
     void AnalyzeObjectMap(TTask* tempTask);
 

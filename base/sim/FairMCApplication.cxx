@@ -38,6 +38,8 @@
 #include "FairVolume.h"                 // for FairVolume
 #include "FairRootFileSink.h"           // for CloneForWorker (in MT mode only)
 
+#include "FairMonitor.h"
+
 #include <iosfwd>                       // for ostream
 #include "TDatabasePDG.h"               // for TDatabasePDG
 #include "TDirectory.h"                 // for TDirectory, gDirectory
@@ -117,7 +119,8 @@ FairMCApplication::FairMCApplication(const char* name, const char* title,
    fSaveCurrentEvent(kTRUE),
    fState(FairMCApplicationState::kUnknownState),
    fRunInfo(),
-   fGeometryIsInitialized(kFALSE)
+   fGeometryIsInitialized(kFALSE),
+   fMonitorMCStepping(kFALSE)
 {
 // Standard Simulation constructor
 
@@ -208,7 +211,8 @@ FairMCApplication::FairMCApplication(const FairMCApplication& rhs)
    fSaveCurrentEvent(kTRUE),
    fState(FairMCApplicationState::kUnknownState),
    fRunInfo(),
-   fGeometryIsInitialized(kFALSE)
+   fGeometryIsInitialized(kFALSE),
+   fMonitorMCStepping(kFALSE)
 {
 // Copy constructor
 // Do not create Root manager
@@ -301,7 +305,8 @@ FairMCApplication::FairMCApplication()
    fSaveCurrentEvent(kTRUE),
    fState(FairMCApplicationState::kUnknownState),
    fRunInfo(),
-   fGeometryIsInitialized(kFALSE)
+   fGeometryIsInitialized(kFALSE),
+   fMonitorMCStepping(kFALSE)
 {
 // Default constructor
 }
@@ -361,6 +366,7 @@ FairMCApplication& FairMCApplication::operator=(const FairMCApplication& rhs)
     fEventHeader = NULL;
     fMCEventHeader = NULL;
     fGeometryIsInitialized = kFALSE;
+    fMonitorMCStepping = kFALSE;
 
     // Do not create Root manager
     
@@ -449,6 +455,8 @@ void FairMCApplication::InitMC(const char*, const char*)
   fTrajFilter = FairTrajFilter::Instance();
 
   LOG(info) << "Monte Carlo Engine Initialisation with: " << MCName.Data();
+
+  fMonitorMCStepping = FairMonitor::GetMonitor()->IsRunning();
 }
 
 //_____________________________________________________________________________
@@ -470,6 +478,8 @@ void FairMCApplication::RunMC(Int_t nofEvents)
 //____________________________________________________________________________
 void FairMCApplication::FinishRun()
 {
+  if ( fMonitorMCStepping )
+    FairMonitor::GetMonitor()->StoreMCStepping();
 // Finish MC run.
 // ---
 
@@ -661,6 +671,8 @@ void FairMCApplication::FinishRunOnWorker()
 //_____________________________________________________________________________
 void FairMCApplication::Stepping()
 {
+  if ( fMonitorMCStepping )
+    FairMonitor::GetMonitor()->RecordMCStepping();
 // User actions at each step
 // ---
 
@@ -760,7 +772,8 @@ void FairMCApplication::Stepping()
   if(fRadGridMan) {
     fRadGridMan->FillMeshList();
   }
-
+  if ( fMonitorMCStepping )
+    FairMonitor::GetMonitor()->FinishMCStepping();
 }
 
 //_____________________________________________________________________________
@@ -810,6 +823,9 @@ void FairMCApplication::StopMCRun()
 //_____________________________________________________________________________
 void FairMCApplication::FinishEvent()
 {
+  if ( fMonitorMCStepping )
+    FairMonitor::GetMonitor()->FlushMCStepping();
+
 // User actions after finishing of an event
 // ---
   LOG(debug) << "FairMCMCApplication::FinishEvent: "
