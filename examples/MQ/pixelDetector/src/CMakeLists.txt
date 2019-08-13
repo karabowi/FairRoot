@@ -16,6 +16,8 @@ set(INCLUDE_DIRECTORIES
   ${CMAKE_SOURCE_DIR}/examples/MQ/pixelDetector/src
   ${CMAKE_SOURCE_DIR}/examples/MQ/pixelDetector/src/devices
   ${CMAKE_SOURCE_DIR}/examples/common/mcstack
+  ${CMAKE_SOURCE_DIR}/examples/common/gconfig
+  ${CMAKE_SOURCE_DIR}/fairtools/MCConfigurator
   ${FairLogger_INCDIR}
 )
 
@@ -118,6 +120,7 @@ Set(DEPENDENCIES
     BaseMQ 
     Gen
     Passive
+    GConfig
     ${Boost_THREAD_LIBRARY} 
     ${Boost_SYSTEM_LIBRARY} 
     ${Boost_SERIALIZATION_LIBRARY} 

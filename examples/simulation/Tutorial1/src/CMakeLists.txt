@@ -14,8 +14,10 @@ Set(INCLUDE_DIRECTORIES
   ${CMAKE_SOURCE_DIR}/examples/simulation/Tutorial1/src
   ${CMAKE_SOURCE_DIR}/examples/common/mcstack
   ${CMAKE_SOURCE_DIR}/examples/common/passive
+  ${CMAKE_SOURCE_DIR}/examples/common/gconfig
   ${CMAKE_SOURCE_DIR}/generators
   ${CMAKE_SOURCE_DIR}/base/sim/fastsim
+  ${CMAKE_SOURCE_DIR}/fairtools/MCConfigurator
   ${FairLogger_INCDIR}
 )
 
@@ -43,7 +45,7 @@ Set(SRCS
 Set(HEADERS )
 Set(LINKDEF Tutorial1LinkDef.h)
 Set(LIBRARY_NAME Tutorial1)
-Set(DEPENDENCIES MCStack Base FairFastSim
+Set(DEPENDENCIES MCStack Base FairFastSim GConfig
     ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 GENERATE_LIBRARY()
@@ -67,6 +69,6 @@ ForEach(_file RANGE 0 ${_length})
   List(GET Exe_Source ${_file} _src)
   Set(EXE_NAME ${_name})
   Set(SRCS ${_src})
-  Set(DEPENDENCIES Tutorial1 Passive Gen ${FairLogger_LIBRARIES})
+  Set(DEPENDENCIES Tutorial1 Passive Gen GConfig ${FairLogger_LIBRARIES})
   GENERATE_EXECUTABLE()
 EndForEach(_file RANGE 0 ${_length})

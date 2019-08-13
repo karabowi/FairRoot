@@ -29,6 +29,7 @@
 #include "FairPrimaryGenerator.h"
 #include "FairParRootFileIo.h"
 #include "FairParSet.h"
+#include "FairVMCConfig.h"
 
 #include "TROOT.h"
 #include "TRint.h"
@@ -74,6 +75,7 @@ void FairMQSimDevice::InitTask()
       rtdb->setSecondInput(fSecondParameter);
   }
 
+  fRunSim->SetSimulationConfig(new FairVMCConfig());
   fRunSim->SetName(fTransportName.data());
 
   if ( fUserConfig.Length() > 0 )
