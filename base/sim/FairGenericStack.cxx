@@ -96,7 +96,6 @@ FairGenericStack* FairGenericStack::CloneStack() const
   return 0;
 }
 
-
 void FairGenericStack::FastSimMoveParticleTo(Double_t xx, Double_t yy, Double_t zz, Double_t tt,
                                       Double_t px, Double_t py, Double_t pz, Double_t en)
 {
@@ -171,6 +170,5 @@ void FairGenericStack::FastSimPushSecondary(Int_t parentID, Int_t pdgCode,
         fFSFirstSecondary = GetListOfParticles()->GetEntries()-1;
     fFSNofSecondaries++;
 }
-
 
 ClassImp(FairGenericStack)
