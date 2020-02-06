@@ -204,6 +204,9 @@ class FairMCApplication : public TVirtualMCApplication
      */
     FairMCApplicationState GetState() const { return fState; }
 
+    void SetPythiaDecayerFunction(std::function<void()> temp) { fPythiaDecayerFunction = temp; }
+    void SetUserDecayFunction    (std::function<void()> temp) { fUserDecayFunction     = temp; }
+
   private:
     // methods
     Int_t GetIonPdg(Int_t z, Int_t a) const;
@@ -228,6 +231,10 @@ class FairMCApplication : public TVirtualMCApplication
     Int_t                fNoSenVolumes; //!
     /**flag for using Pythia as external decayer */
     Bool_t               fPythiaDecayer;
+
+    std::function<void()> fPythiaDecayerFunction;
+    std::function<void()> fUserDecayFunction;
+
     /** Pythia decay config macro*/
     TString               fPythiaDecayerConfig; //!
     /** Simulation Stack  */

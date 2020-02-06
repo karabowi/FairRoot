@@ -21,6 +21,7 @@
 
 #include <functional>
 
+#include "FairLogger.h"
 class FairField;
 class FairMCEventHeader;
 class FairMesh;
@@ -121,10 +122,14 @@ class FairRunSim : public FairRun
     void SetPythiaDecayer(Bool_t decayer) {fPythiaDecayer = decayer;}
 
     /**switch On external decayer (Pythia). Config macro will be used */
-    void SetPythiaDecayer(const TString& Config );
+    void SetPythiaDecayerConfig(const TString& Config );
+
+    void SetPythiaDecayerFunction(std::function<void()> temp) { fPythiaDecayerFunction = temp; }
+
+    void SetUserDecayFunction    (std::function<void()> temp) { fUserDecayFunction     = temp; }
 
     /**switch On user defined decay, Config  macro will be called  */
-    void SetUserDecay(const TString& Config);
+    void SetUserDecayConfig(const TString& Config);
 
     /**switch On/Off user defined decay if true gconfig/UserDecay.C macro will be called  */
     void SetUserDecay(Bool_t decay) {fUserDecay = decay;}
@@ -196,8 +201,10 @@ class FairRunSim : public FairRun
     TString*               fLoaderName;  //!                       /** Geometry Model (TGeo or G3)*/
     Bool_t                 fPythiaDecayer;  //!                    /** flag for using Pythia decayer*/
     TString                fPythiaDecayerConfig; //!               /** Macro for Pythia decay configuration*/
+    std::function<void()>  fPythiaDecayerFunction;
     Bool_t                 fUserDecay;                             /** flag for setting user decay */
     TString                fUserDecayConfig; //!                   /** Macro for decay configuration*/
+    std::function<void()>  fUserDecayFunction;
     Bool_t                 fRadLength;   //!                       /** flag for registring radiation length*/
     Bool_t                 fRadMap; //!                            /** flag for RadiationMapManager
     Bool_t                 fRadGrid;  //!

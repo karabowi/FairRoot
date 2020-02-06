@@ -1300,7 +1300,11 @@ void FairMCApplication::AddDecayModes()
   }
   // set Pythia as external decayer
 
-  if (fPythiaDecayer) {
+  if ( fPythiaDecayerFunction ) {
+      fPythiaDecayerFunction();
+  }
+  else if (fPythiaDecayer) {
+      LOG(warning) << "Setting PythiaDecayerConfig DEPRECATED. Use SetPythiaDecayerFunction.";
     TString decayConfig;
     if (fPythiaDecayerConfig.IsNull()) {
       decayConfig="DecayConfig.C";
@@ -1333,7 +1337,13 @@ void FairMCApplication::AddDecayModes()
   }
   // set user defined phase space decay for particles (ions)
   AbsPath=kFALSE;
-  if (fUserDecay) {
+  LOG(info) << "MCAPP  User decay = " << (fUserDecay?"true":"false") << " / config = \"" << fUserDecayConfig.Data() << "\"";
+
+  if ( fUserDecayFunction ) {
+      fUserDecayFunction();
+  }
+  else if (fUserDecay) {
+      LOG(warning) << "Setting UserDecayConfig DEPRECATED. Use SetUserDecayFunction.";
     TString Userdecay;
     if (fUserDecayConfig.IsNull()) {
       Userdecay="UserDecay.C";

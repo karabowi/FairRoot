@@ -191,17 +191,23 @@ void FairRunSim::Init()
 
   // Set global Parameter Info
 
-  if(fPythiaDecayer) {
-    fApp->SetPythiaDecayer(fPythiaDecayer);
-    if (fPythiaDecayerConfig) {
-      fApp->SetPythiaDecayerConfig(fPythiaDecayerConfig);
-    }
+  if(fPythiaDecayerFunction) {
+      fApp->SetPythiaDecayerFunction(fPythiaDecayerFunction);
   }
-  if(fUserDecay) {
-    fApp->SetUserDecay(fUserDecay);
-    if (fUserDecayConfig) {
-      fApp->SetUserDecayConfig(fUserDecayConfig);
-    }
+  else if(fPythiaDecayer) {
+      fApp->SetPythiaDecayer(fPythiaDecayer);
+      if (fPythiaDecayerConfig) {
+          fApp->SetPythiaDecayerConfig(fPythiaDecayerConfig);
+      }
+  }
+  if(fUserDecayFunction) {
+      fApp->SetUserDecayFunction(fUserDecayFunction);
+  }
+  else if(fUserDecay) {
+      fApp->SetUserDecay(fUserDecay);
+      if (fUserDecayConfig) {
+          fApp->SetUserDecayConfig(fUserDecayConfig);
+      }
   }
   // on/off visualisation
   if( fStoreTraj ) {
@@ -342,14 +348,14 @@ void FairRunSim::SetGeoModel( char* name )
   }
 }
 
-void  FairRunSim::SetPythiaDecayer(const TString& Config )
+void  FairRunSim::SetPythiaDecayerConfig(const TString& Config )
 {
   /**switch On external decayer (Pythia). Config macro will be used */
   fPythiaDecayerConfig = Config;
   fPythiaDecayer =kTRUE;
 }
 
-void  FairRunSim::SetUserDecay(const TString& Config)
+void  FairRunSim::SetUserDecayConfig(const TString& Config)
 {
   /**switch On user defined decay, Config  macro will be called  */
   fUserDecayConfig = Config;
