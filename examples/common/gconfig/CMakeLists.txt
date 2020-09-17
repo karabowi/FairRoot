@@ -30,6 +30,7 @@ target_link_libraries(${target} PUBLIC
   FairRoot::MCConfigurator # FairYamlVMCConfig
   FairRoot::ExMCStack # FairStack
 
+  EGPythia6
   ${VMCLIB} # TVirtualMC
 )
 

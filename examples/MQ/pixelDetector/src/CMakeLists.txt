@@ -86,6 +86,8 @@ target_link_libraries(${target} PUBLIC
   ROOT::Physics
   ROOT::Geom
   ROOT::Hist
+  EGPythia6
+
   ${VMCLIB}
 )
 
