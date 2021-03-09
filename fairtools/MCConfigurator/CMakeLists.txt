@@ -34,6 +34,7 @@ target_link_libraries(${target} PUBLIC
 
   ROOT::Core
   ${VMCLIB}
+  EGPythia6
 )
 
 fairroot_target_root_dictionary(${target}
