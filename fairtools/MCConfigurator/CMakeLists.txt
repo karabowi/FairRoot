@@ -30,6 +30,7 @@ target_link_libraries(${target} PUBLIC
 
   geant321
   geant4vmc
+  Pythia6
   yaml-cpp
 
   ROOT::Core
