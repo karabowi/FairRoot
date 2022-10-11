@@ -289,7 +289,7 @@ void FairRunSim::SetMCConfig()
         fSimSetup();
     } else {
         if (fSimulationConfig == nullptr)   // RKRKRK COMMENT
-        fSimulationConfig = std::make_unique<FairGenericVMCConfig>();
+            fSimulationConfig = std::make_unique<FairGenericVMCConfig>();
         fSimulationConfig->Setup(GetName());
     }
 

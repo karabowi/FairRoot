@@ -208,9 +208,18 @@ void FairXmlVMCConfig::SetupGeant3()
         }
         if (floatVect.size() != 11 && floatVect.size() != 16)
             LOG(fatal) << "Setting: expecting 11 or 16 floats to setup G3_CUTS";
-        geant3->SetCUTS(floatVect[0], floatVect[1], floatVect[2], floatVect[3], floatVect[4], floatVect[5],
-                        floatVect[6], floatVect[7], floatVect[8], floatVect[9], floatVect[10],
-                        (floatVect.size()==16)?(&floatVect[11]):0);
+        geant3->SetCUTS(floatVect[0],
+                        floatVect[1],
+                        floatVect[2],
+                        floatVect[3],
+                        floatVect[4],
+                        floatVect[5],
+                        floatVect[6],
+                        floatVect[7],
+                        floatVect[8],
+                        floatVect[9],
+                        floatVect[10],
+                        (floatVect.size() == 16) ? (&floatVect[11]) : 0);
     }
 }
 
@@ -278,8 +287,7 @@ void FairXmlVMCConfig::SetCuts()
         while (child != 0) {
             fXmlEngine->GetNodeName(child);
             MC->SetProcess(fXmlEngine->GetNodeName(child), ConvertTo<float>(child));
-            LOG(debug) << "Setting Process \"" << fXmlEngine->GetNodeName(child) << "\" to "
-                       << ConvertTo<float>(child);
+            LOG(debug) << "Setting Process \"" << fXmlEngine->GetNodeName(child) << "\" to " << ConvertTo<float>(child);
             child = fXmlEngine->GetNext(child);
         }
     }
