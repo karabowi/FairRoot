@@ -36,7 +36,7 @@ FairXmlVMCConfig::FairXmlVMCConfig()
     , fMCEngine("")
     , fXmlEngine(new TXMLEngine())
 {
-    UsePostInitConfig();
+    UsePostInitConfig(false);
 }
 
 void FairXmlVMCConfig::Setup(const char* mcEngine)
@@ -99,10 +99,10 @@ void FairXmlVMCConfig::SetupPostInit(const char* mcEngine)
             AbsPath = kTRUE;
         }
         g4Macro = fPostInitName;
-        LOG(info) << "---------------User config is used: " << g4Macro.Data();
+        LOG(debug) << "---------------User config is used: " << g4Macro.Data();
     }
     if (!AbsPath && TString(gSystem->FindFile(config_dir.Data(), g4Macro)) != TString("")) {
-        LOG(info) << "---User path for Configuration (" << fPostInitName << ") is used: " << config_dir.Data();
+        LOG(debug) << "---User path for Configuration (" << fPostInitName << ") is used: " << config_dir.Data();
         ConfigMacro = g4Macro;
     } else {
         if (AbsPath) {
@@ -147,58 +147,70 @@ void FairXmlVMCConfig::SetupGeant3()
     XMLNodePointer_t xmlNode = 0;
 
     if ((xmlNode = GetPointer("SIM:G3:TRIG", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:TRIG to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetTRIG(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:TRIG to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetTRIG(ConvertTo<float>(xmlNode));
         xmlNode = 0;
     }
     if ((xmlNode = GetPointer("SIM:G3:SWIT", fXmlConfig))) {
-        std::vector<double> dblVect = ConvertToVector<double>(xmlNode);
-        LOG(debug) << "Setting SIM:G3:SWIT to " << dblVect.size() << " values:";
-        for (auto val : dblVect) {
+        std::vector<float> floatVect = ConvertToVector<float>(xmlNode);
+        LOG(debug) << "Setting SIM:G3:SWIT to " << floatVect.size() << " values:";
+        for (auto val : floatVect) {
             LOG(debug) << "   -> " << val;
         }
-        if (dblVect.size() != 2)
-            LOG(fatal) << "Setting: expecting 2 integers to setup G3_SWIT";
-        geant3->SetSWIT(dblVect[0], dblVect[1]);
+        if (floatVect.size() != 2)
+            LOG(fatal) << "Setting: expecting 2 floats to setup G3_SWIT";
+        geant3->SetSWIT(floatVect[0], floatVect[1]);
         xmlNode = 0;
     }
     if ((xmlNode = GetPointer("SIM:G3:DEBU", fXmlConfig))) {
-        std::vector<double> dblVect = ConvertToVector<double>(xmlNode);
-        LOG(debug) << "Setting SIM:G3:DEBU to " << dblVect.size() << " values:";
-        for (auto val : dblVect) {
+        std::vector<float> floatVect = ConvertToVector<float>(xmlNode);
+        LOG(debug) << "Setting SIM:G3:DEBU to " << floatVect.size() << " values:";
+        for (auto val : floatVect) {
             LOG(debug) << "   -> " << val;
         }
-        if (dblVect.size() != 3)
-            LOG(fatal) << "Setting: expecting 3 integers to setup G3_DEBU";
-        geant3->SetDEBU(dblVect[0], dblVect[1], dblVect[2]);
+        if (floatVect.size() != 3)
+            LOG(fatal) << "Setting: expecting 3 floats to setup G3_DEBU";
+        geant3->SetDEBU(floatVect[0], floatVect[1], floatVect[2]);
     }
     if ((xmlNode = GetPointer("SIM:G3:RAYL", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:RAYL to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetRAYL(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:RAYL to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetRAYL(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:STRA", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:STRA to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetSTRA(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:STRA to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetSTRA(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:AUTO", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:AUTO to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetAUTO(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:AUTO to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetAUTO(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:ABAN", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:ABAN to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetABAN(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:ABAN to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetABAN(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:OPTI", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:OPTI to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetOPTI(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:OPTI to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetOPTI(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:ERAN", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:ERAN to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetERAN(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:ERAN to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetERAN(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G3:CKOV", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G3:CKOV to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant3->SetCKOV(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G3:CKOV to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant3->SetCKOV(ConvertTo<float>(xmlNode));
+    }
+    if ((xmlNode = GetPointer("SIM:G3:CUTS", fXmlConfig))) {
+        std::vector<float> floatVect = ConvertToVector<float>(xmlNode);
+        LOG(debug) << "Setting SIM:G3:CUTS to " << floatVect.size() << " values:";
+        for (auto val : floatVect) {
+            LOG(debug) << "   -> " << val;
+        }
+        if (floatVect.size() != 11 && floatVect.size() != 16)
+            LOG(fatal) << "Setting: expecting 11 or 16 floats to setup G3_CUTS";
+        geant3->SetCUTS(floatVect[0], floatVect[1], floatVect[2], floatVect[3], floatVect[4], floatVect[5],
+                        floatVect[6], floatVect[7], floatVect[8], floatVect[9], floatVect[10],
+                        (floatVect.size()==16)?(&floatVect[11]):0);
     }
 }
 
@@ -240,8 +252,8 @@ void FairXmlVMCConfig::SetupGeant4()
     TGeant4* geant4 = new TGeant4("TGeant4", "The Geant4 Monte Carlo", runConfiguration);
 
     if ((xmlNode = GetPointer("SIM:G4:MaxNStep", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:G4:MaxNStep to \"" << ConvertTo<double>(xmlNode) << "\"";
-        geant4->SetMaxNStep(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:G4:MaxNStep to \"" << ConvertTo<float>(xmlNode) << "\"";
+        geant4->SetMaxNStep(ConvertTo<float>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:G4:Commands", fXmlConfig))) {
         std::vector<string> strVect = ConvertToVector<string>(xmlNode);
@@ -265,9 +277,9 @@ void FairXmlVMCConfig::SetCuts()
         XMLNodePointer_t child = fXmlEngine->GetChild(xmlNode);
         while (child != 0) {
             fXmlEngine->GetNodeName(child);
-            MC->SetProcess(fXmlEngine->GetNodeName(child), ConvertTo<double>(child));
+            MC->SetProcess(fXmlEngine->GetNodeName(child), ConvertTo<float>(child));
             LOG(debug) << "Setting Process \"" << fXmlEngine->GetNodeName(child) << "\" to "
-                       << ConvertTo<double>(child);
+                       << ConvertTo<float>(child);
             child = fXmlEngine->GetNext(child);
         }
     }
@@ -277,8 +289,8 @@ void FairXmlVMCConfig::SetCuts()
         XMLNodePointer_t child = fXmlEngine->GetChild(xmlNode);
         while (child != 0) {
             fXmlEngine->GetNodeName(child);
-            MC->SetCut(fXmlEngine->GetNodeName(child), ConvertTo<double>(child));
-            LOG(debug) << "Setting Cut \"" << fXmlEngine->GetNodeName(child) << "\" to " << ConvertTo<double>(child);
+            MC->SetCut(fXmlEngine->GetNodeName(child), ConvertTo<float>(child));
+            LOG(debug) << "Setting Cut \"" << fXmlEngine->GetNodeName(child) << "\" to " << ConvertTo<float>(child);
             child = fXmlEngine->GetNext(child);
         }
     }
@@ -379,13 +391,13 @@ string FairXmlVMCConfig::ConvertTo<string>(XMLNodePointer_t xmlPointer)
 }
 
 template<>
-double FairXmlVMCConfig::ConvertTo<double>(XMLNodePointer_t xmlPointer)
+float FairXmlVMCConfig::ConvertTo<float>(XMLNodePointer_t xmlPointer)
 {
     string str = fXmlEngine->GetNodeContent(xmlPointer);
     if (str.find_first_not_of("0123456789e.-") != std::string::npos) {
-        LOG(fatal) << "Cannot convert string \"" << str << "\" to double";
+        LOG(fatal) << "Cannot convert string \"" << str << "\" to float";
     }
-    return stod(str);
+    return stof(str);
 }
 
 template<>

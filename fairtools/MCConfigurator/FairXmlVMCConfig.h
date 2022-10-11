@@ -60,7 +60,7 @@ class FairXmlVMCConfig : public FairGenericVMCConfig
     template<>
     string ConvertTo<string>(XMLNodePointer_t xmlPointer);
     template<>
-    double ConvertTo<double>(XMLNodePointer_t xmlPointer);
+    float ConvertTo<float>(XMLNodePointer_t xmlPointer);
     template<>
     bool ConvertTo<bool>(XMLNodePointer_t xmlPointer);
 

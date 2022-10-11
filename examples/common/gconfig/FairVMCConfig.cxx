@@ -34,8 +34,8 @@ void FairVMCConfig::SetupStack()
         stack->StoreSecondaries(ConvertTo<bool>(xmlNode));
     }
     if ((xmlNode = GetPointer("SIM:FairStack:MinPoints", fXmlConfig))) {
-        LOG(debug) << "Setting SIM:FairStack:MinPoints to \"" << ConvertTo<double>(xmlNode) << "\"";
-        stack->SetMinPoints(ConvertTo<double>(xmlNode));
+        LOG(debug) << "Setting SIM:FairStack:MinPoints to \"" << ConvertTo<float>(xmlNode) << "\"";
+        stack->SetMinPoints(ConvertTo<float>(xmlNode));
     }
 
     TVirtualMC::GetMC()->SetStack(stack);
