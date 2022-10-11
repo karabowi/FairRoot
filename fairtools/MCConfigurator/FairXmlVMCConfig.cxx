@@ -149,7 +149,6 @@ void FairXmlVMCConfig::SetupGeant3()
     if ((xmlNode = GetPointer("SIM:G3:TRIG", fXmlConfig))) {
         LOG(debug) << "Setting SIM:G3:TRIG to \"" << ConvertTo<float>(xmlNode) << "\"";
         geant3->SetTRIG(ConvertTo<float>(xmlNode));
-        xmlNode = 0;
     }
     if ((xmlNode = GetPointer("SIM:G3:SWIT", fXmlConfig))) {
         std::vector<float> floatVect = ConvertToVector<float>(xmlNode);
@@ -160,7 +159,6 @@ void FairXmlVMCConfig::SetupGeant3()
         if (floatVect.size() != 2)
             LOG(fatal) << "Setting: expecting 2 floats to setup G3_SWIT";
         geant3->SetSWIT(floatVect[0], floatVect[1]);
-        xmlNode = 0;
     }
     if ((xmlNode = GetPointer("SIM:G3:DEBU", fXmlConfig))) {
         std::vector<float> floatVect = ConvertToVector<float>(xmlNode);
