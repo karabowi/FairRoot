@@ -104,7 +104,6 @@ file an issue, so that we can see how to handle this.
   dependent targets are built (`FairRoot::FairMQ` and `FairRoot::ParMQ`). It is enabled
   by default and will now **require** its external package dependencies FairMQ and Boost.
 
-
 ### Deprecations
 
 This release of FairRoot deprecates many APIs for various
@@ -139,3 +138,9 @@ file an issue, so that we can see how to handle this.
   those tests have a probability > 0 for failing.
   If you want to run them anyways, pass
   `-DENABLE_GEANT3_TESTING=ON` to CMake.
+* In the MT mode of Geant4 simulation renamed the simulation output folder names
+  from cbmroot_1 and cbmroot_2 to cbmroot.
+* Added FairRunSim::WasMT() method to check if the simulation was performed in MT mode.
+
+### Example Changes in Experiment Repos
+* https://github.com/R3BRootGroup/R3BRoot/pull/413

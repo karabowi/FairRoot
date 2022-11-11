@@ -19,6 +19,7 @@
 #include <Rtypes.h>                  // for Int_t, Bool_t, Double_t, etc
 #include <TLorentzVector.h>          // for TLorentzVector
 #include <TString.h>                 // for TString
+#include <TVirtualMC.h>              // for TVirtualMC
 #include <TVirtualMCApplication.h>   // for TVirtualMCApplication
 #include <list>                      // for list
 #include <map>                       // for map, multimap, etc
@@ -44,12 +45,7 @@ class TRefArray;
 class TTask;
 class TVirtualMC;
 
-enum class FairMCApplicationState
-{
-    kUnknownState,
-    kConstructGeometry,
-    kInitGeometry
-};
+enum class FairMCApplicationState { kUnknownState, kConstructGeometry, kInitGeometry };
 
 /**
  * The Main Application ( Interface to MonteCarlo application )
@@ -221,9 +217,16 @@ class FairMCApplication : public TVirtualMCApplication
      */
     auto GetRadGridMan() { return fRadGridMan.get(); }
 
+    /**
+     * Return the MT state of TVirtualMC
+     */
+    auto GetIsMT() { return fMC ? fMC->IsMT() : false; }
+
   private:
     // methods
     Int_t GetIonPdg(Int_t z, Int_t a) const;
+    /** Register output */
+    void RegisterOutput();
 
     void UndoGeometryModifications();
 
@@ -280,7 +283,7 @@ class FairMCApplication : public TVirtualMCApplication
     /** Track position*/
     /**dispatcher internal use RadLeng*/
     std::map<Int_t, Int_t> fModVolMap;   //!
-    TLorentzVector fTrkPos;                         //!
+    TLorentzVector fTrkPos;              //!
     /** Flag for Radiation length register mode  */
     Bool_t fRadLength;   //!
 
