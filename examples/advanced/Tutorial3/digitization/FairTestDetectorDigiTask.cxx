@@ -5,16 +5,18 @@
  *              GNU Lesser General Public Licence (LGPL) version 3,             *
  *                  copied verbatim in the file "LICENSE"                       *
  ********************************************************************************/
- #include "FairTestDetectorDigiTask.h"
- #include <TClonesArray.h>           // for TClonesArray
- #include <TGenericClassInfo.h>      // for TGenericClassInfo
- #include <TMath.h>                  // for Sqrt
- #include <TRandom.h>                // for TRandom, gRandom
- #include <iostream>                 // for operator<<, basic_ostream, endl
- #include "FairLink.h"               // for FairLink
- #include "FairRootManager.h"        // for FairRootManager
- #include "FairTestDetectorDigi.h"   // for FairTestDetectorDigi
- #include "FairTestDetectorPoint.h"  // for FairTestDetectorPoint
+#include "FairTestDetectorDigiTask.h"
+
+#include "FairLink.h"                // for FairLink
+#include "FairRootManager.h"         // for FairRootManager
+#include "FairTestDetectorDigi.h"    // for FairTestDetectorDigi
+#include "FairTestDetectorPoint.h"   // for FairTestDetectorPoint
+
+#include <TClonesArray.h>        // for TClonesArray
+#include <TGenericClassInfo.h>   // for TGenericClassInfo
+#include <TMath.h>               // for Sqrt
+#include <TRandom.h>             // for TRandom, gRandom
+#include <iostream>              // for operator<<, basic_ostream, endl
 
 FairTestDetectorDigiTask::FairTestDetectorDigiTask()
     : FairTask("TestDetectorDigTask")
@@ -22,6 +24,14 @@ FairTestDetectorDigiTask::FairTestDetectorDigiTask()
     , fPointArray(nullptr)
     , fDigiArray(nullptr)
 {}
+
+FairTestDetectorDigiTask::FairTestDetectorDigiTask(const FairTestDetectorDigiTask& rhs)
+    : FairTask(rhs)
+{
+    fTimeResolution = rhs.fTimeResolution;
+    fPointArray = nullptr;
+    fDigiArray = nullptr;
+}
 
 FairTestDetectorDigiTask::~FairTestDetectorDigiTask() {}
 
@@ -40,7 +50,6 @@ InitStatus FairTestDetectorDigiTask::Init()
                   << "No Point array!" << std::endl;
         return kERROR;
     }
-
     // Create and register output array
     fDigiArray = new TClonesArray("FairTestDetectorDigi");
     ioman->Register("FairTestDetectorDigi", "FairTestDetector", fDigiArray, kTRUE);
@@ -96,6 +105,11 @@ Double_t FairTestDetectorDigiTask::CalcTimeStamp(Double_t timeOfFlight)
     } else {
         return result;
     }
+}
+
+FairTask* FairTestDetectorDigiTask::CloneTask() const
+{
+    return new FairTestDetectorDigiTask(*this);
 }
 
 ClassImp(FairTestDetectorDigiTask);

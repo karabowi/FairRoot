@@ -11,6 +11,7 @@
 #include "FairDetector.h"
 
 #include <Rtypes.h>           // for Int_t, Double32_t, Double_t, etc
+#include <TClonesArray.h>     // for TClonesArray
 #include <TLorentzVector.h>   // for TLorentzVector
 #include <TVector3.h>         // for TVector3
 
@@ -85,24 +86,28 @@ class FairTestDetector : public FairDetector
     void PreTrack() override { ; }
     void BeginEvent() override { ; }
 
+    /** Necessary function to enable this detector in TGeant4 MT mode */
+    FairModule* CloneModule() const override;
+
+    /** Necessary function to enable this detector in TGeant4 MT mode */
+    Bool_t IsSensitive(const std::string& name) override;
+
   private:
     /** Track information to be stored until the track leaves the
     active volume.
     */
-    Int_t fTrackID;           //!  track index
-    Int_t fVolumeID;          //!  volume id
-    TLorentzVector fPos;      //!  position at entrance
-    TLorentzVector fMom;      //!  momentum at entrance
-    TLorentzVector fPosOut;   //!  position at entrance
-    TLorentzVector fMomOut;   //!  momentum at entrance
-    Double32_t fTime;         //!  time
-    Double32_t fLength;       //!  length
-    Double32_t fELoss;        //!  energy loss
-    Int_t fEventNr;           //! current event number;
+    Int_t fTrackID{-1};         //!  track index
+    Int_t fVolumeID{-1};        //!  volume id
+    TLorentzVector fPos{};      //!  position at entrance
+    TLorentzVector fMom{};      //!  momentum at entrance
+    TLorentzVector fPosOut{};   //!  position at entrance
+    TLorentzVector fMomOut{};   //!  momentum at entrance
+    Double32_t fTime{-1.};      //!  time
+    Double32_t fLength{-1.};    //!  length
+    Double32_t fELoss{-1.};     //!  energy loss
+    Int_t fEventNr{0};          //! current event number;
 
-    /** container for data points */
-
-    TClonesArray* fFairTestDetectorPointCollection;
+    std::unique_ptr<TClonesArray> fFairTestDetectorPointCollection{new TClonesArray("FairTestDetectorPoint")};   //!
 
     FairTestDetector(const FairTestDetector&);
     FairTestDetector& operator=(const FairTestDetector&);

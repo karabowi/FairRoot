@@ -13,6 +13,7 @@ GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_digi.C)
 GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_reco.C)
 GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_digi_timebased.C)
 GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_reco_timebased.C)
+GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_simdigi.C)
 if(BUILD_PROOF_SUPPORT)
   GENERATE_ROOT_TEST_SCRIPT(${CMAKE_CURRENT_SOURCE_DIR}/run_digi_reco_proof.C)
 endif()
@@ -71,6 +72,13 @@ foreach(mcEngine IN LISTS mcEngine_list)
     )
   endif()
 endforeach()
+
+add_test(NAME ex_tutorial3_Geant4MT
+         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/run_simdigi.sh 10 \"TGeant4\" true)
+set_tests_properties(ex_tutorial3_Geant4MT PROPERTIES
+  TIMEOUT ${maxTestTime}
+  PASS_REGULAR_EXPRESSION "Simulation successful."
+)
 
 install(FILES
   run_sim.C run_digi.C run_reco.C eventDisplay.C run_digi_timebased.C run_reco_timebased.C

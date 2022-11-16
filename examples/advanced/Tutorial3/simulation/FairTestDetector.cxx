@@ -18,45 +18,25 @@
 #include "FairTestDetectorPoint.h"    // for FairTestDetectorPoint
 #include "FairVolume.h"               // for FairVolume
 
-#include <TClonesArray.h>      // for TClonesArray
 #include <TVirtualMC.h>        // for TVirtualMC
 #include <TVirtualMCStack.h>   // for TVirtualMCStack
 
 FairTestDetector::FairTestDetector()
     : FairDetector("FairTestDetector", kTRUE, kTutDet)
-    , fTrackID(-1)
-    , fVolumeID(-1)
-    , fPos()
-    , fMom()
-    , fPosOut()
-    , fMomOut()
-    , fTime(-1.)
-    , fLength(-1.)
-    , fELoss(-1)
-    , fEventNr(0)
-    , fFairTestDetectorPointCollection(new TClonesArray("FairTestDetectorPoint"))
 {}
 
 FairTestDetector::FairTestDetector(const char* name, Bool_t active)
     : FairDetector(name, active, kTutDet)
-    , fTrackID(-1)
-    , fVolumeID(-1)
-    , fPos()
-    , fMom()
-    , fPosOut()
-    , fMomOut()
-    , fTime(-1.)
-    , fLength(-1.)
-    , fELoss(-1)
-    , fEventNr(0)
-    , fFairTestDetectorPointCollection(new TClonesArray("FairTestDetectorPoint"))
+{}
+
+FairTestDetector::FairTestDetector(const FairTestDetector& rhs)
+    : FairDetector(rhs)
 {}
 
 FairTestDetector::~FairTestDetector()
 {
     if (fFairTestDetectorPointCollection) {
         fFairTestDetectorPointCollection->Delete();
-        delete fFairTestDetectorPointCollection;
     }
 }
 
@@ -70,7 +50,6 @@ void FairTestDetector::Initialize()
 Bool_t FairTestDetector::ProcessHits(FairVolume* vol)
 {
     /** This method is called from the MC stepping */
-
     // Set parameters at entrance of volume. Reset ELoss.
     if (TVirtualMC::GetMC()->IsTrackEntering()) {
         fELoss = 0.;
@@ -128,26 +107,36 @@ void FairTestDetector::Register()
     */
 
     FairRootManager::Instance()->Register(
-        "FairTestDetectorPoint", "FairTestDetector", fFairTestDetectorPointCollection, kTRUE);
+        "FairTestDetectorPoint", "FairTestDetector", fFairTestDetectorPointCollection.get(), kTRUE);
 }
 
 TClonesArray* FairTestDetector::GetCollection(Int_t iColl) const
 {
     if (iColl == 0) {
-        return fFairTestDetectorPointCollection;
+        return fFairTestDetectorPointCollection.get();
     } else {
         return nullptr;
     }
 }
 
-void FairTestDetector::Reset() { fFairTestDetectorPointCollection->Clear(); }
+void FairTestDetector::Reset()
+{
+    fFairTestDetectorPointCollection->Clear();
+}
+
+Bool_t FairTestDetector::IsSensitive(const std::string& name)
+{
+    if (name.find("torino") != std::string::npos) {
+        return kTRUE;
+    }
+    return kFALSE;
+}
 
 void FairTestDetector::ConstructGeometry()
 {
     /** If you are using the standard ASCII input for the geometry
         just copy this and use it for your detector, otherwise you can
         implement here you own way of constructing the geometry. */
-
     FairTestDetectorGeo* Geo = new FairTestDetectorGeo();
     ConstructASCIIGeometry<FairTestDetectorGeo, FairTestDetectorGeoPar>(Geo, "FairTestDetectorGeoPar");
 }
@@ -168,6 +157,11 @@ FairTestDetectorPoint* FairTestDetector::AddHit(Int_t trackID,
         new (clref[size]) FairTestDetectorPoint(trackID, detID, pos, mom, posOut, momOut, time, length, eLoss);
     myPoint->SetLink(FairLink(-1, fEventNr, FairRootManager::Instance()->GetBranchId("MCTrack"), trackID));
     return myPoint;
+}
+
+FairModule* FairTestDetector::CloneModule() const
+{
+    return new FairTestDetector(*this);
 }
 
 ClassImp(FairTestDetector);

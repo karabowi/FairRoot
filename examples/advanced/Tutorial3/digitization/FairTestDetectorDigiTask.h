@@ -8,12 +8,13 @@
 #ifndef FAIRTESTDETECTORDIGITASK_H_
 #define FAIRTESTDETECTORDIGITASK_H_
 
-#include <Rtypes.h>      // for THashConsistencyHolder, ClassDef
-#include <RtypesCore.h>  // for Double_t, Int_t, Option_t
-#include "FairTask.h"    // for FairTask, InitStatus
+#include "FairTask.h"   // for FairTask, InitStatus
+
+#include <Rtypes.h>       // for THashConsistencyHolder, ClassDef
+#include <RtypesCore.h>   // for Double_t, Int_t, Option_t
 class TBuffer;
 class TClass;
-class TClonesArray;  // lines 15-15
+class TClonesArray;   // lines 15-15
 class TMemberInspector;
 
 class FairTestDetectorDigiTask : public FairTask
@@ -34,6 +35,8 @@ class FairTestDetectorDigiTask : public FairTask
     void SetTimeResolution(Double_t timeInNs) { fTimeResolution = timeInNs; }
     Double_t GetTimeResolution() { return fTimeResolution; }
 
+    FairTask* CloneTask() const override;
+
   private:
     Int_t CalcPad(Double_t posIn, Double_t posOut);
     Double_t CalcTimeStamp(Double_t timeOfFlight);
@@ -43,7 +46,7 @@ class FairTestDetectorDigiTask : public FairTask
     TClonesArray* fPointArray;
     TClonesArray* fDigiArray;
 
-    FairTestDetectorDigiTask(const FairTestDetectorDigiTask&);
+    FairTestDetectorDigiTask(const FairTestDetectorDigiTask& rhs);
     FairTestDetectorDigiTask& operator=(const FairTestDetectorDigiTask&);
 
     ClassDefOverride(FairTestDetectorDigiTask, 1);
