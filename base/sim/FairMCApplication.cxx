@@ -233,7 +233,21 @@ FairMCApplication::FairMCApplication(const FairMCApplication& rhs, std::unique_p
         fEvGen = rhs.fEvGen->ClonePrimaryGenerator();
     }
 
-    fMCEventHeader = rhs.fMCEventHeader->CloneMCEventHeader();
+    fFairTaskList = new FairTask("Task List", 1);
+    gROOT->GetListOfBrowsables()->Add(fFairTaskList);
+    fMcVersion = -1;
+
+    FairTask* taskList = (FairTask*)(rhs.GetListOfTasks());
+    TIter next(taskList->GetListOfTasks());
+    FairTask* task;
+    while ((task = dynamic_cast<FairTask*>(next()))) {
+        TIter nextL(task->GetListOfTasks());
+        FairTask* taskL;
+        while ((taskL = dynamic_cast<FairTask*>(nextL()))) {
+            fRun->AddTask(taskL->CloneTask());
+        }
+    }
+    AddTask(fRun->GetMainTask());
 
     // Create a Task list
     // Let's try without it
@@ -519,6 +533,11 @@ void FairMCApplication::InitOnWorker()
         std::lock_guard guard(mtx);
         fRootManager->InitSink();
         RegisterOutput();
+
+        if (fFairTaskList) {
+            InitTasks();
+        }
+
         fRootManager->WriteFolder();
     }
 
@@ -927,11 +946,13 @@ void FairMCApplication::RegisterOutput()
     }
     fModIter->Reset();
 
-    if (fRootManager) {
-        fMCEventHeader->Register();
-    }
+    fMCEventHeader = fRun->GetMCEventHeader();
+
     if (fEvGen) {
         fEvGen->SetEvent(fMCEventHeader);
+    }
+    if (fRootManager) {
+        fMCEventHeader->Register();
     }
 }
 
@@ -959,10 +980,6 @@ void FairMCApplication::InitGeometry()
 
     LOG(info) << "Simulation RunID: " << runId;
 
-    // Get and register the MCEventHeader
-    fMCEventHeader = fRun->GetMCEventHeader();
-    fMCEventHeader->SetRunID(runId);
-
     fTrajFilter = FairTrajFilter::Instance();
     if (nullptr != fTrajFilter) {
         fTrajFilter->Init();
@@ -980,16 +997,18 @@ void FairMCApplication::InitGeometry()
     // Register output
     if (fRootManager && !fParent) {
         RegisterOutput();
+
+        /**Tasks has to be initialized here, they have access to the detector branches and still can create objects in
+         * the tree*/
+        /// There is always a Main Task  !
+        /// so .. always a InitTasks() is called <D.B>
+        if (fFairTaskList) {
+            InitTasks();
+        }
+
         fRootManager->WriteFolder();
     }
-
-    /**Tasks has to be initialized here, they have access to the detector branches and still can create objects in the
-     * tree*/
-    /// There is always a Main Task  !
-    /// so .. always a InitTasks() is called <D.B>
-    if (fFairTaskList) {
-        InitTasks();
-    }
+    fMCEventHeader->SetRunID(runId);
 
     // Get static thread local svList
     fSenVolumes = FairModule::svList;
@@ -1276,7 +1295,7 @@ FairGenericStack* FairMCApplication::GetStack()
 }
 
 //_____________________________________________________________________________
-TTask* FairMCApplication::GetListOfTasks()
+TTask* FairMCApplication::GetListOfTasks() const
 {
     return fFairTaskList;
 }
@@ -1300,6 +1319,7 @@ void FairMCApplication::SetParTask()
 void FairMCApplication::InitTasks()
 {
     // Only RTDB init when more than Main Task list
+    LOG(info) << "fRun has " << fRun->GetNTasks() << " tasks.";
     if (fRun->GetNTasks() >= 1) {
         LOG(info) << "Initialize Tasks--------------------------";
         fFairTaskList->InitTask();

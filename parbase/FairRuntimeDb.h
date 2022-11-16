@@ -10,6 +10,7 @@
 
 #include <Rtypes.h>    // for Bool_t, Int_t, Text_t, etc
 #include <TList.h>     // for TList
+#include <TMCtls.h>    // for multi-threading
 #include <TObject.h>   // for TObject
 #include <TString.h>   // for TString
 
@@ -24,7 +25,7 @@ static TList contFactories;   //! list of container factories
 class FairRuntimeDb : public TObject
 {
   private:
-    static FairRuntimeDb* gRtdb;   //!
+    static TMCThreadLocal FairRuntimeDb* gRtdb;   //!
 
   protected:
     FairRuntimeDb(void);
@@ -43,8 +44,7 @@ class FairRuntimeDb : public TObject
     /**
      * Select which IO type to use.
      */
-    typedef enum
-    {
+    typedef enum {
         UNKNOWN_Type = 0,
         AsciiFileOutput = 1,   // Ascii in-out-put
         RootFileOutput = 2,    // Root Files

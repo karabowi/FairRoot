@@ -40,6 +40,7 @@ target_link_libraries(${target} PUBLIC
 
   ROOT::Core
   ROOT::RIO
+  ${VMCLIB}
 )
 
 fairroot_target_root_dictionary(${target}

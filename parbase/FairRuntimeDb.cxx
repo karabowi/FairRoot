@@ -15,17 +15,17 @@
 /////////////////////////////////////////////////////////////
 #include "FairRuntimeDb.h"
 
-#include "FairContFact.h"            // for FairContFact
-#include "FairDetParAsciiFileIo.h"   // for FairDetParAsciiFileIo
-#include "FairDetParRootFileIo.h"    // for FairDetParRootFileIo
+#include "FairContFact.h"                // for FairContFact
+#include "FairDetParAsciiFileIo.h"       // for FairDetParAsciiFileIo
+#include "FairDetParRootFileIo.h"        // for FairDetParRootFileIo
 #include "FairGenericParAsciiFileIo.h"   // for FairGenericParAsciiFileIo
 #include "FairGenericParRootFileIo.h"    // for FairGenericParRootFileIo
-#include "FairLogger.h"           // for FairLogger, MESSAGE_ORIGIN
-#include "FairParAsciiFileIo.h"   // for FairParAsciiFileIo
-#include "FairParIo.h"            // for FairParIo
-#include "FairParRootFileIo.h"    // for FairParRootFileIo
-#include "FairParSet.h"           // for FairParSet
-#include "FairRtdbRun.h"          // for FairRtdbRun, FairParVersion
+#include "FairLogger.h"                  // for FairLogger, MESSAGE_ORIGIN
+#include "FairParAsciiFileIo.h"          // for FairParAsciiFileIo
+#include "FairParIo.h"                   // for FairParIo
+#include "FairParRootFileIo.h"           // for FairParRootFileIo
+#include "FairParSet.h"                  // for FairParSet
+#include "FairRtdbRun.h"                 // for FairRtdbRun, FairParVersion
 
 #include <TClass.h>        // for TClass
 #include <TCollection.h>   // for TIter
@@ -44,7 +44,7 @@ using std::setw;
 
 ClassImp(FairRuntimeDb);
 
-FairRuntimeDb* FairRuntimeDb::gRtdb = 0;
+TMCThreadLocal FairRuntimeDb* FairRuntimeDb::gRtdb = nullptr;
 
 FairRuntimeDb* FairRuntimeDb::instance(void)
 {
@@ -274,7 +274,10 @@ void FairRuntimeDb::removeRun(Text_t* name)
     }
 }
 
-void FairRuntimeDb::clearRunList() { runs->Delete(); }
+void FairRuntimeDb::clearRunList()
+{
+    runs->Delete();
+}
 
 void FairRuntimeDb::writeVersions()
 {

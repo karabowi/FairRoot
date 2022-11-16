@@ -39,6 +39,16 @@ FairTask::FairTask(const char* name, Int_t iVerbose)
     , fOutputPersistance()
 {}
 
+FairTask::FairTask(const FairTask& rhs)
+    : TTask(rhs)
+{
+    fVerbose = rhs.fVerbose;
+    fInputPersistance = rhs.fInputPersistance;
+    fLogger = rhs.fLogger;
+    fStreamProcessing = rhs.fStreamProcessing;
+    fOutputPersistance = rhs.fOutputPersistance;
+}
+
 void FairTask::CheckInputPersistance(TString branchName)
 {
     FairRootManager* ioman = FairRootManager::Instance();
@@ -256,6 +266,12 @@ Bool_t FairTask::IsOutputBranchPersistent(TString branchName)
     } else {
         return kTRUE;
     }
+}
+
+FairTask* FairTask::CloneTask() const
+{
+    Fatal("CloneTask", "Has to be overriden in multi-threading applications.");
+    return 0;
 }
 
 ClassImp(FairTask);

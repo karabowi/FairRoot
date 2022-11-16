@@ -28,12 +28,7 @@
 
 class FairLogger;
 
-enum InitStatus
-{
-    kSUCCESS,
-    kERROR,
-    kFATAL
-};
+enum InitStatus { kSUCCESS, kERROR, kFATAL };
 
 /**
  * \ingroup base_steer
@@ -50,7 +45,7 @@ class FairTask : public TTask
      **/
     FairTask(const char* name, Int_t iVerbose = 1);
 
-    FairTask(const FairTask&) = delete;
+    FairTask(const FairTask& rhs);
     FairTask& operator=(const FairTask&) = delete;
     FairTask(FairTask&&) = delete;
     FairTask& operator=(FairTask&&) = delete;
@@ -76,6 +71,9 @@ class FairTask : public TTask
 
     /** Action at end of event. For this task and all of the subtasks. **/
     virtual void FinishEvent();
+
+    /** Clone this object (used in MT mode only)*/
+    virtual FairTask* CloneTask() const;
 
     /** Set verbosity level. For this task and all of the subtasks. **/
     void SetVerbose(Int_t iVerbose);

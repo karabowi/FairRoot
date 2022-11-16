@@ -114,7 +114,7 @@ class FairMCApplication : public TVirtualMCApplication
     /**Return primary generator*/
     FairPrimaryGenerator* GetGenerator();
     /**Return list of tasks*/
-    TTask* GetListOfTasks();
+    TTask* GetListOfTasks() const;
     FairGenericStack* GetStack();
     TChain* GetChain();
     /** Initialize geometry */
