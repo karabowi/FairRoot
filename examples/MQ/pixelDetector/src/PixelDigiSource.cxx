@@ -134,9 +134,9 @@ Int_t PixelDigiSource::ReadEvent(UInt_t i)
 
 Bool_t PixelDigiSource::ActivateObject(TObject** obj, const char* BrName)
 {
-    if (strcmp(BrName, "PixelDigis"))
+    if (strcmp(BrName, "PixelDigis") == 0)
         *obj = (TObject*)fDigis;
-    else if (strcmp(BrName, "EventHeader."))
+    else if (strcmp(BrName, "EventHeader.") == 0)
         *obj = (TObject*)fEventHeader;
     else
         return kFALSE;
@@ -144,11 +144,17 @@ Bool_t PixelDigiSource::ActivateObject(TObject** obj, const char* BrName)
     return kTRUE;
 }
 
-void PixelDigiSource::Close() { fInputFile.close(); }
+void PixelDigiSource::Close()
+{
+    fInputFile.close();
+}
 
 void PixelDigiSource::Reset() {}
 
-Int_t PixelDigiSource::CheckMaxEventNo(Int_t /*EvtEnd*/) { return -1; }
+Int_t PixelDigiSource::CheckMaxEventNo(Int_t /*EvtEnd*/)
+{
+    return -1;
+}
 
 void PixelDigiSource::FillEventHeader(FairEventHeader* feh)
 {
