@@ -7,52 +7,52 @@
  ********************************************************************************/
 
 #include <TStopwatch.h>
-#include <TString.h>
 #include <TSystem.h>
 #include <memory>
 
-void run_tutorial1_pythia6(Int_t nEvents = 10, TString mcEngine = "TGeant3")
+using std::cout;
+using std::endl;
+using std::string;
+
+int run_tutorial1_pythia6(int nEvents = 10, string mcEngine = "TGeant3")
 {
-    TString dir = getenv("VMCWORKDIR");
-    TString tutdir = dir + "/simulation/Tutorial1";
+    string dir = getenv("VMCWORKDIR");
+    string tutdir = dir + "/simulation/Tutorial1";
 
-    TString tut_geomdir = dir + "/common/geometry";
-    gSystem->Setenv("GEOMPATH", tut_geomdir.Data());
+    string tut_geomdir = dir + "/common/geometry";
+    gSystem->Setenv("GEOMPATH", tut_geomdir.c_str());
 
-    TString tut_configdir = dir + "/common/gconfig";
-    gSystem->Setenv("CONFIG_DIR", tut_configdir.Data());
+    string tut_configdir = dir + "/common/gconfig";
+    gSystem->Setenv("CONFIG_DIR", tut_configdir.c_str());
 
-    TString pythia6Config(tut_configdir + "/DecayConfig.C");
+    string pythia6Config = tut_configdir + "/DecayConfig.C";
 
-    TString partName[] = {"pions", "eplus", "proton"};
-    Int_t partPdgC[] = {211, 11, 2212};
-    Int_t chosenPart = 0;
+    // 2023.11.23: Introduce and choose D0(421) particle
+    // which apparently is not decayed by Geant3.
+    // Points present in the input are there thanks to
+    // external decayer, Pythia6.
+    string partName[] = {"pions", "eplus", "proton", "D0"};
+    int partPdgC[] = {221, 11, 2212, 421};
+    auto chosenPart = 3;
 
-    Double_t momentum = 2.;
+    auto momentum = 2.;
 
-    Double_t theta = 0.;
+    auto theta = 0.;
 
-    TString outDir = "./";
+    auto nofPart = 1;
+
+    string outDir = "./";
 
     // Output file name
-    TString outFile = Form("%s/tutorial1_pythia6_%s_%s.mc_p%1.3f_t%1.0f_n%d.root",
-                           outDir.Data(),
-                           mcEngine.Data(),
-                           partName[chosenPart].Data(),
-                           momentum,
-                           theta,
-                           nEvents);
+    string outFile = outDir + "/tutorial1_pythia6_" + mcEngine + "_" + partName[chosenPart] + ".mc_p" + std::to_string(momentum)
+                     + "_t" + std::to_string(theta) + "_n" + std::to_string(nEvents) + ".root";
 
     // Parameter file name
-    TString parFile = Form("%s/tutorial1_pythia6_%s_%s.params_p%1.3f_t%1.0f_n%d.root",
-                           outDir.Data(),
-                           mcEngine.Data(),
-                           partName[chosenPart].Data(),
-                           momentum,
-                           theta,
-                           nEvents);
+    string parFile = outDir + "/tutorial1_pythia6_" + mcEngine + "_" + partName[chosenPart] + ".params_p"
+                     + std::to_string(momentum) + "_t" + std::to_string(theta) + "_n" + std::to_string(nEvents)
+                     + ".root";
 
-    TString geoFile = outDir + "geofile_pythia6_" + mcEngine + "_full.root";
+    auto geoFile = "geofile_" + mcEngine + "_full.root";
 
     // In general, the following parts need not be touched
     // ========================================================================
@@ -68,9 +68,9 @@ void run_tutorial1_pythia6(Int_t nEvents = 10, TString mcEngine = "TGeant3")
 
     // -----   Create simulation run   ----------------------------------------
     FairRunSim run{};
-    run.SetName(mcEngine);   // Transport engine
+    run.SetName(mcEngine.c_str());   // Transport engine
     run.SetSink(std::make_unique<FairRootFileSink>(outFile));
-    run.SetPythiaDecayer(pythia6Config);   // Define Pythia6 as decayer
+    //    run.SetPythiaDecayer(pythia6Config);   // Define Pythia6 as decayer
 
     FairRuntimeDb* rtdb = run.GetRuntimeDb();
     // ------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void run_tutorial1_pythia6(Int_t nEvents = 10, TString mcEngine = "TGeant3")
 
     Bool_t kParameterMerged = kTRUE;
     FairParRootFileIo* parOut = new FairParRootFileIo(kParameterMerged);
-    parOut->open(parFile.Data());
+    parOut->open(parFile.c_str());
     rtdb->setOutput(parOut);
     rtdb->saveOutput();
     rtdb->print();
@@ -120,7 +120,7 @@ void run_tutorial1_pythia6(Int_t nEvents = 10, TString mcEngine = "TGeant3")
 
     // -----   Start run   ----------------------------------------------------
     run.Run(nEvents);
-    run.CreateGeometryFile(geoFile);
+    run.CreateGeometryFile(geoFile.c_str());
     // ------------------------------------------------------------------------
 
     // -----   Finish   -------------------------------------------------------
@@ -151,4 +151,38 @@ void run_tutorial1_pythia6(Int_t nEvents = 10, TString mcEngine = "TGeant3")
     cout << "Macro finished successfully." << endl;
 
     // ------------------------------------------------------------------------
+
+    TChain chain("cbmsim");
+    chain.Add(outFile.c_str());
+
+    auto nofE = chain.GetEntries();
+    auto nofT = chain.Draw("MCTrack.fPx", "", "goff");
+    auto nofP = chain.Draw("TutorialDetPoint.fX", "", "goff");
+    auto nofB = (chain.GetListOfBranches())->GetEntries();
+    auto nofL = (chain.GetListOfLeaves())->GetEntries();
+    cout << "Output chain has " << nofE << " events, " << nofT << " tracks, " << nofP << " points in " << nofB
+         << " branches, " << nofL << " leaves." << endl;
+    if (nofE < nEvents) {
+        std::cerr << "Not enough events (" << nofE << " < " << nEvents << ") in the output chain." << endl;
+        return 1;
+    }
+    if (nofT < nEvents * nofPart) {
+        std::cerr << "Not enough tracks (" << nofT << " < " << nEvents * nofPart << ") in the output chain." << endl;
+        return 1;
+    }
+    if (nofP < nEvents * nofPart) {
+        std::cerr << "Not enough points (" << nofP << " < " << nEvents * nofPart << ") in the output chain." << endl;
+        return 1;
+    }
+    if (nofB != 3) {
+        std::cerr << "Wrong number of branches (" << nofB << " instead of 3) in the output chain." << endl;
+        return 1;
+    }
+    if (nofL != 46) {
+        std::cerr << "Wrong number of leaves (" << nofL << " instead of 46) in the output chain." << endl;
+        return 1;
+    }
+    cout << "Simulation successful." << endl;
+
+    return 0;
 }

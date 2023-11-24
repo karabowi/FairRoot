@@ -26,14 +26,14 @@ foreach(mcEngine IN LISTS mcEngine_list)
            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/run_tutorial1_pythia6.sh 10 \"${mcEngine}\")
   set_tests_properties(ex_sim_tutorial1_pythia6_${mcEngine} PROPERTIES
     TIMEOUT ${maxTestTime}
-    PASS_REGULAR_EXPRESSION "Macro finished successfully"
+    PASS_REGULAR_EXPRESSION "Simulation successful."
   )
 
   add_test(NAME ex_sim_tutorial1_pythia8_${mcEngine}
            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/run_tutorial1_pythia8.sh 10 \"${mcEngine}\")
   set_tests_properties(ex_sim_tutorial1_pythia8_${mcEngine} PROPERTIES
     TIMEOUT ${maxTestTime}
-    PASS_REGULAR_EXPRESSION "Macro finished successfully"
+    PASS_REGULAR_EXPRESSION "Simulation successful."
   )
 
   add_test(NAME ex_sim_tutorial1_urqmd_${mcEngine}
