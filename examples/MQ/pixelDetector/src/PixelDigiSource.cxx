@@ -136,7 +136,7 @@ Bool_t PixelDigiSource::ActivateObject(TObject** obj, const char* BrName)
     return kTRUE;
 }
 
-void PixelDigiSource::Close() { fInputFile.close(); }
+//void PixelDigiSource::Close() { fInputFile.close(); }
 
 void PixelDigiSource::Reset() {}
 

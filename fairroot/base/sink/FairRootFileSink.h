@@ -38,7 +38,7 @@ class FairRootFileSink : public FairSink
     ~FairRootFileSink() override = default;
 
     Bool_t InitSink() override;
-    void Close() override;
+    //    void Close() override;
     void Reset() override;
 
     Sink_Type GetSinkType() override { return kFILESINK; }

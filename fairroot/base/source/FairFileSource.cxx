@@ -318,7 +318,7 @@ Bool_t FairFileSource::SpecifyRunId()
     return fInChain->GetEntry(0) != 0;
 }
 
-void FairFileSource::Close() { CloseInFile(); }
+//void FairFileSource::Close() { CloseInFile(); }
 
 void FairFileSource::AddFriend(TString fName) { fFriendFileList.push_back(fName); }
 

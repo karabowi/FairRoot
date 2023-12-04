@@ -402,7 +402,7 @@ Int_t FairMixedSource::ReadEvent(UInt_t i)
     return 0;
 }
 
-void FairMixedSource::Close() {}
+//void FairMixedSource::Close() {}
 
 void FairMixedSource::FillEventHeader(FairEventHeader* feh)
 {

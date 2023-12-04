@@ -33,7 +33,7 @@ class PixelDigiBinSource : public FairSource
     Bool_t Init() override;
 
     Int_t ReadEvent(UInt_t i = 0) override;
-    void Close() override;
+    //    void Close() override;
     void Reset() override;
     Bool_t SpecifyRunId() override
     {

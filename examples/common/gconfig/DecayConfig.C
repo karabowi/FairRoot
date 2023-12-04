@@ -57,7 +57,7 @@ void DecayConfig()
     for (Int_t ipartnf = 0; ipartnf < npartnf; ipartnf++) {
         Int_t ipdg = pdgnf[ipartnf];
 
-        if (TString(TVirtualMC::GetMC()->GetName()) == "TGeant3")
+        if (TString(TVirtualMC::GetMC()->GetName()) == "TGeant3" || TString(TVirtualMC::GetMC()->GetName()) == "TGeant3TGeo")
             TVirtualMC::GetMC()->SetUserDecay(ipdg);   // Force the decay to be done w/external decayer
 
         pythia6.SetMDCY(pythia6.Pycomp(ipdg), 1, 1);   // Activate decay in pythia
@@ -76,7 +76,7 @@ void DecayConfig()
     Int_t pdghq[nparthq] = {421, 3122, -3122};
     for (Int_t iparthq = 0; iparthq < nparthq; iparthq++) {
         Int_t ipdg = pdghq[iparthq];
-        if (TString(TVirtualMC::GetMC()->GetName()) == "TGeant3")
+        if (TString(TVirtualMC::GetMC()->GetName()) == "TGeant3" || TString(TVirtualMC::GetMC()->GetName()) == "TGeant3TGeo")
             TVirtualMC::GetMC()->SetUserDecay(ipdg);   // Force the decay to be done w/external decayer
         pythia6.SetMDCY(pythia6.Pycomp(ipdg), 1, 1);   // Activate decay in pythia
     }

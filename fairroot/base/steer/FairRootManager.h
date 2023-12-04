@@ -66,7 +66,7 @@ class FairRootManager : public TObject
     void CloseSink()
     {
         if (fSink) {
-            fSink->Close();
+            //            fSink->Close();
         }
     }
     /**Create a new file and save the current TGeoManager object to it*/

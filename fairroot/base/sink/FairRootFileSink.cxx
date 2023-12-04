@@ -200,12 +200,12 @@ void FairRootFileSink::TruncateBranchNames(TBranch* b, TString ffn)
     delete BrIter;
 }
 
-void FairRootFileSink::Close()
+/*void FairRootFileSink::Close()
 {
     if (fRootFile) {
         fRootFile->Close();
     }
-}
+    }*/
 
 void FairRootFileSink::Reset() {}
 
