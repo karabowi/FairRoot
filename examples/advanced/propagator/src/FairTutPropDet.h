@@ -12,9 +12,10 @@
 #include "Rtypes.h"           // for Int_t, Double32_t, Double_t, etc
 #include "TLorentzVector.h"   // for TLorentzVector
 #include "TVector3.h"         // for TVector3
+
 class FairTutPropPoint;
 class FairVolume;
-class TClonesArray;
+#include <string>
 
 class FairTutPropDet : public FairDetector
 {
@@ -39,20 +40,18 @@ class FairTutPropDet : public FairDetector
     /**       Registers the produced collections in FAIRRootManager.     */
     void Register() override;
 
-    /** Gets the produced collections */
-    TClonesArray* GetCollection(Int_t iColl) const override;
-
     /**      has to be called after each event to reset the containers      */
     void Reset() override;
 
     /**      Create the detector geometry        */
     void ConstructGeometry() override;
 
+    TClonesArray* GetCollection(Int_t iColl) const override { return nullptr; };
+
     /**      This method is an example of how to add your own point
      *       of type FairTutPropDetPoint to the clones array
      */
-    FairTutPropPoint*
-        AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length, Double_t eLoss);
+    void AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length, Double_t eLoss);
 
     /** The following methods can be implemented if you need to make
      *  any optional action in your detector during the transport.
@@ -77,8 +76,7 @@ class FairTutPropDet : public FairDetector
     Double32_t fELoss;     //!  energy loss
 
     /** container for data points */
-
-    TClonesArray* fFairTutPropPointCollection;
+    std::vector<FairTutPropPoint>* fPointVector{new std::vector<FairTutPropPoint>};
 
     FairTutPropDet(const FairTutPropDet&);
     FairTutPropDet& operator=(const FairTutPropDet&);

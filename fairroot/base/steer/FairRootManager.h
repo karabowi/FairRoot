@@ -9,6 +9,7 @@
 #define FAIR_ROOT_MANAGER_H
 
 #include "FairMemory.h"
+#include "FairRNTupleSink.h"   // to enable GetOutFile()
 #include "FairSink.h"
 #include "FairSource.h"
 
@@ -163,6 +164,8 @@ class FairRootManager : public TObject
     Int_t GetRunId();
 
     Bool_t ReadNextEvent(Double_t dt);
+
+    void Register(const char* name, const char* Foldername, TObject* obj, Bool_t toFile);
     /**create a new branch in the output tree
      *@param name            Name of the branch to create
      *@param Foldername      Folder name containing this branch (e.g Detector name)
@@ -458,9 +461,12 @@ void FairRootManager::RegisterAny(const char* brname, T*& obj, bool persistence)
     if (persistence) {
         auto& ot = typeid(T*);
         auto& pt = typeid(T);
-        if (fSink)
-            fSink->RegisterAny(brname, ot, pt, &obj);
-        else
+        if (fSink) {
+            if (fSink->GetSinkType() == kRNTUPLESINK)
+                ((FairRNTupleSink*)(fSink.get()))->RegisterRNTuple<T>(brname, obj);
+            else
+                fSink->RegisterAny(brname, ot, pt, &obj);
+        } else
             LOG(fatal) << "The sink does not exist to store persistent branches.";
     }
 }

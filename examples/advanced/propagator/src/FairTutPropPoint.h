@@ -42,7 +42,6 @@ class FairTutPropPoint : public FairMCPoint
     /** Output to screen **/
     virtual void Print(const Option_t* opt) const;
 
-  private:
     /** Copy constructor **/
     FairTutPropPoint(const FairTutPropPoint& point);
     FairTutPropPoint operator=(const FairTutPropPoint& point);

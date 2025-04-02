@@ -37,6 +37,7 @@
 
 #include "FairDetectorList.h"   // for DetectorId
 #include "FairGenericStack.h"   // for FairGenericStack
+#include "FairMCTrack.h"
 
 #include <Rtypes.h>       // for Int_t, Double_t, Bool_t, etc
 #include <TMCProcess.h>   // for TMCProcess
@@ -223,7 +224,7 @@ class FairStack : public FairGenericStack
     TClonesArray* fParticles;   //!
 
     /** Array of FairMCTracks containg the tracks written to the output **/
-    TClonesArray* fTracks;
+    std::vector<FairMCTrack>* fTrackVector{new std::vector<FairMCTrack>};
 
     /** STL map from particle index to storage flag  **/
     std::map<Int_t, Bool_t> fStoreMap;   //!
@@ -235,10 +236,10 @@ class FairStack : public FairGenericStack
     std::map<std::pair<Int_t, Int_t>, Int_t> fPointsMap;   //!
 
     /** Some indizes and counters **/
-    Int_t fNPrimaries;     //! Number of primary particles
-    Int_t fNParticles;     //! Number of entries in fParticles
-    Int_t fNTracks;        //! Number of entries in fTracks
-    Int_t fIndex;          //! Used for merging
+    Int_t fNPrimaries;   //! Number of primary particles
+    Int_t fNParticles;   //! Number of entries in fParticles
+    Int_t fNTracks;      //! Number of entries in fTracks
+    Int_t fIndex;        //! Used for merging
 
     /** Variables defining the criteria for output selection **/
     Bool_t fStoreSecondaries;

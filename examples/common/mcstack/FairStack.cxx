@@ -31,7 +31,6 @@ FairStack::FairStack(Int_t size)
     : FairGenericStack()
     , fStack()
     , fParticles(new TClonesArray("TParticle", size))
-    , fTracks(new TClonesArray("FairMCTrack", size))
     , fStoreMap()
     , fIndexMap()
     , fPointsMap()
@@ -50,10 +49,6 @@ FairStack::~FairStack()
     if (fParticles) {
         fParticles->Delete();
         delete fParticles;
-    }
-    if (fTracks) {
-        fTracks->Delete();
-        delete fTracks;
     }
 }
 
@@ -217,12 +212,12 @@ void FairStack::FillTrackArray()
         }
 
         if (store) {
-            FairMCTrack* track = new ((*fTracks)[fNTracks]) FairMCTrack(GetParticle(iPart));
+            fTrackVector->push_back(FairMCTrack(GetParticle(iPart)));
             fIndexMap[iPart] = fNTracks;
             // --> Set the number of points in the detectors for this track
             for (Int_t iDet = kREF; iDet < kSTOPHERE; iDet++) {
                 pair<Int_t, Int_t> a(iPart, iDet);
-                track->SetNPoints(iDet, fPointsMap[a]);
+                fTrackVector->back().SetNPoints(iDet, fPointsMap[a]);
             }
             fNTracks++;
         } else {
@@ -247,14 +242,14 @@ void FairStack::UpdateTrackIndex(TRefArray* detList)
     Int_t nColl = 0;
 
     // First update mother ID in MCTracks
-    for (Int_t i = 0; i < fNTracks; i++) {
-        FairMCTrack* track = static_cast<FairMCTrack*>(fTracks->At(i));
-        Int_t iMotherOld = track->GetMotherId();
+    //    for (Int_t i = 0; i < fNTracks; i++) {
+    for (auto track : *fTrackVector) {
+        Int_t iMotherOld = track.GetMotherId();
         auto indexiter = fIndexMap.find(iMotherOld);
         if (indexiter == fIndexMap.end()) {
             LOG(fatal) << "Particle index " << iMotherOld << " not found in index map!";
         } else {
-            track->SetMotherId((*indexiter).second);
+            track.SetMotherId((*indexiter).second);
         }
     }
 
@@ -307,7 +302,7 @@ void FairStack::Reset()
         fStack.pop();
     }
     fParticles->Clear();
-    fTracks->Clear();
+    fTrackVector->clear();
     fPointsMap.clear();
     FairGenericStack::Reset();
 }
@@ -315,9 +310,9 @@ void FairStack::Reset()
 void FairStack::Register()
 {
     if (gMC) {
-        FairRootManager::Instance()->Register("MCTrack", "Stack", fTracks, kTRUE);
+        FairRootManager::Instance()->RegisterAny("MCTrack", fTrackVector, kTRUE);
     } else {
-        FairRootManager::Instance()->RegisterAny("MCTrack", fTracks, kTRUE);
+        FairRootManager::Instance()->RegisterAny("MCTrack", fTrackVector, kTRUE);
     }
 }
 
@@ -327,8 +322,10 @@ void FairStack::Print(Option_t*) const
     LOG(info) << "              Total number of particles  = " << fNParticles;
     LOG(info) << "              Number of tracks in output = " << fNTracks;
     if (gLogger->IsLogNeeded(fair::Severity::debug1)) {
-        for (Int_t iTrack = 0; iTrack < fNTracks; iTrack++) {
-            (static_cast<FairMCTrack*>(fTracks->At(iTrack))->Print(iTrack));
+        auto iTrack = 0;
+        for (auto track : *fTrackVector) {
+            //            (static_cast<FairMCTrack*>(fTracks->At(iTrack))->Print(iTrack));
+            track.Print(iTrack++);
         }
     }
 }

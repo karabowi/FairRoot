@@ -45,3 +45,7 @@ void FairTutPropPoint::Print(const Option_t* /*opt*/) const
          << endl;
 }
 // -------------------------------------------------------------------------
+
+FairTutPropPoint::FairTutPropPoint(const FairTutPropPoint& rhs)
+    : FairMCPoint(rhs)
+{}

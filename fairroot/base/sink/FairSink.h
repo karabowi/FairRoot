@@ -29,7 +29,8 @@ class TTree;
 enum Sink_Type
 {
     kONLINESINK,
-    kFILESINK
+    kFILESINK,
+    kRNTUPLESINK
 };
 
 class FairSink
