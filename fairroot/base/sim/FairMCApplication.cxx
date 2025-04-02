@@ -967,14 +967,13 @@ void FairMCApplication::RegisterOutput()
             }
         }
     }
-
     fMCEventHeader = fRun->GetMCEventHeader();
 
     if (fEvGen) {
         fEvGen->SetEvent(fMCEventHeader);
     }
     if (fRootManager) {
-        fMCEventHeader->Register();
+        fRootManager->RegisterAny("MCEventHeader", fMCEventHeader, kTRUE);
     }
 }
 

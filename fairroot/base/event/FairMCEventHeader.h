@@ -15,11 +15,11 @@
 #define FAIRMCEVENTHEADER_H 1
 
 #include <Rtypes.h>     // for Double_t, UInt_t, etc
-#include <TNamed.h>     // for TNamed
+#include <TObject.h>    // for TObject
 #include <TVector3.h>   // for TVector3
 #include <limits>       // for std::numeric_limits
 
-class FairMCEventHeader : public TNamed
+class FairMCEventHeader : public TObject
 {
   public:
     /// Alias name for event id type
@@ -98,7 +98,7 @@ class FairMCEventHeader : public TNamed
     Double32_t fRotY;              ///  Rotation around y-axis (beam tilt) [rad]
     Double32_t fRotZ;              ///  Rotation around z-axis (event plane) [rad]
 
-    ClassDefOverride(FairMCEventHeader, 2);
+    ClassDefOverride(FairMCEventHeader, 3);
 };
 
 inline void FairMCEventHeader::SetVertex(Double_t x, Double_t y, Double_t z)

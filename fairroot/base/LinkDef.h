@@ -73,6 +73,7 @@
 
 #pragma link C++ class FairSink;
 #pragma link C++ class FairRootFileSink;
+#pragma link C++ class FairRNTupleSink;
 #ifdef BUILD_PROOF_SUPPORT
 #pragma link C++ class FairAnaSelector+;
 #pragma link C++ class FairRunAnaProof;

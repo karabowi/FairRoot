@@ -48,6 +48,7 @@ set(sources
   sim/FairVolumeList.cxx
 
   sink/FairRootFileSink.cxx
+  sink/FairRNTupleSink.cxx
   sink/FairSink.cxx
 
   source/FairFileSourceBase.cxx
@@ -116,6 +117,7 @@ target_link_libraries(${target}
   ROOT::Physics
   ROOT::RIO
   ROOT::Tree
+  ROOT::ROOTNTuple
   ${VMCLIB}
 
   PRIVATE

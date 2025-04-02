@@ -51,16 +51,9 @@ FairTutPropDet::FairTutPropDet(const char* name, Bool_t active)
     , fTime(-1.)
     , fLength(-1.)
     , fELoss(-1)
-    , fFairTutPropPointCollection(new TClonesArray("FairTutPropPoint"))
 {}
 
-FairTutPropDet::~FairTutPropDet()
-{
-    if (fFairTutPropPointCollection) {
-        fFairTutPropPointCollection->Delete();
-        delete fFairTutPropPointCollection;
-    }
-}
+FairTutPropDet::~FairTutPropDet() {}
 
 Bool_t FairTutPropDet::ProcessHits(FairVolume* vol)
 {
@@ -105,7 +98,6 @@ Bool_t FairTutPropDet::ProcessHits(FairVolume* vol)
                fTime,
                fLength,
                fELoss);
-
         // Increment number of FairTutPropDet points in TParticle
         FairStack* stack = static_cast<FairStack*>(TVirtualMC::GetMC()->GetStack());
         stack->AddPoint(kTutProp);
@@ -114,7 +106,10 @@ Bool_t FairTutPropDet::ProcessHits(FairVolume* vol)
     return kTRUE;
 }
 
-void FairTutPropDet::EndOfEvent() { fFairTutPropPointCollection->Clear(); }
+void FairTutPropDet::EndOfEvent()
+{
+    fPointVector->clear();
+}
 
 void FairTutPropDet::Register()
 {
@@ -124,18 +119,13 @@ void FairTutPropDet::Register()
         only during the simulation.
     */
 
-    GetRootManager().Register(fPointsArrayName.c_str(), "FairTutPropDet", fFairTutPropPointCollection, kTRUE);
+    GetRootManager().RegisterAny(fPointsArrayName.c_str(), fPointVector, kTRUE);
 }
 
-TClonesArray* FairTutPropDet::GetCollection(Int_t iColl) const
+void FairTutPropDet::Reset()
 {
-    if (iColl == 0) {
-        return fFairTutPropPointCollection;
-    }
-    return NULL;
+    fPointVector->clear();
 }
-
-void FairTutPropDet::Reset() { fFairTutPropPointCollection->Clear(); }
 
 void FairTutPropDet::ConstructGeometry()
 {
@@ -146,14 +136,14 @@ void FairTutPropDet::ConstructGeometry()
     ConstructASCIIGeometry<FairTutPropGeo, FairTutPropGeoPar>("FairTutPropGeoPar");
 }
 
-FairTutPropPoint* FairTutPropDet::AddHit(Int_t trackID,
-                                         Int_t detID,
-                                         TVector3 pos,
-                                         TVector3 mom,
-                                         Double_t time,
-                                         Double_t length,
-                                         Double_t eLoss)
+void FairTutPropDet::AddHit(Int_t trackID,
+                            Int_t detID,
+                            TVector3 pos,
+                            TVector3 mom,
+                            Double_t time,
+                            Double_t length,
+                            Double_t eLoss)
 {
-    Int_t size = fFairTutPropPointCollection->GetEntriesFast();
-    return new ((*fFairTutPropPointCollection)[size]) FairTutPropPoint(trackID, detID, pos, mom, time, length, eLoss);
+    fPointVector->push_back(FairTutPropPoint(trackID, detID, pos, mom, time, length, eLoss));
+    return;
 }
