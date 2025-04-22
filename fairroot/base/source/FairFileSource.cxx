@@ -264,6 +264,11 @@ Bool_t FairFileSource::Init()
         }
     }
 
+    if ( !fMCHeader && !fEvtHeader ) {
+        ActivateObjectAny((void**)&fMCHeader, typeid(FairMCEventHeader), "MCEventHeader");
+        ActivateObjectAny((void**)&fEvtHeader, typeid(FairEventHeader), "EventHeader");
+    }
+
     FairRootManager::Instance()->SetListOfFolders(&fListFolder);
 
     AddFriendsToChain();

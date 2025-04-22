@@ -23,7 +23,8 @@ class FairEventHeader;
 enum Source_Type
 {
     kONLINE,
-    kFILE
+    kFILE,
+    kRNTUPLE
 };
 
 class FairSource : public TObject

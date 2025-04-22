@@ -51,7 +51,7 @@ Bool_t PixelDigiSource::Init()
     // Register output array StsDigi
     ioman->Register("PixelDigis", "Pixel", &fDigis, kFALSE);
 
-    fEventHeader.SetName("EventHeader.");
+    //    fEventHeader.SetName("EventHeader.");
     ioman->Register("EventHeader.", "EvtHeader", &fEventHeader, kFALSE);
 
     fInputFile.open(fInputFileName.Data(), std::fstream::in);

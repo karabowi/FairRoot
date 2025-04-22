@@ -70,6 +70,7 @@
 #pragma link C++ class FairFileSourceBase;
 #pragma link C++ class FairFileSource;
 #pragma link C++ class FairMixedSource;
+#pragma link C++ class FairRNTupleSource;
 
 #pragma link C++ class FairSink;
 #pragma link C++ class FairRootFileSink;

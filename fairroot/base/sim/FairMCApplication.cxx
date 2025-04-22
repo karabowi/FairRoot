@@ -973,6 +973,7 @@ void FairMCApplication::RegisterOutput()
         fEvGen->SetEvent(fMCEventHeader);
     }
     if (fRootManager) {
+        //fMCEventHeader->Register();
         fRootManager->RegisterAny("MCEventHeader", fMCEventHeader, kTRUE);
     }
 }
