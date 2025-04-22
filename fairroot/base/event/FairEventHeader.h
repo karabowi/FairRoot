@@ -14,14 +14,15 @@
 #define FAIREVENTHEADER_H
 
 #include <Rtypes.h>   // for Int_t, Double_t, UInt_t, ClassDef, etc
-#include <TNamed.h>   // for TNamed
+//#include <TNamed.h>   // for TNamed
+#include <TObject.h>   // for TObject
 
 /**
  *  Event Header Class
  **@author D.Bertini <d.bertini@gsi.de>
  **@author M.Al-Turany <m.al-turany@gsi.de>
  */
-class FairEventHeader : public TNamed
+class FairEventHeader : public TObject
 {
   public:
     /** Default constructor */

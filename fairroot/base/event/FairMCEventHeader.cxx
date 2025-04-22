@@ -17,6 +17,7 @@
 #include "FairRootManager.h"
 
 FairMCEventHeader::FairMCEventHeader()
+    //    : TNamed("MCEvent", "MC")
     : TObject()
     , fRunId(0)
     , fX(0.)
@@ -33,6 +34,7 @@ FairMCEventHeader::FairMCEventHeader()
 
 FairMCEventHeader::FairMCEventHeader(UInt_t runId)
     : TObject()
+      //    : TNamed("MCEvent", "MC")
     , fRunId(runId)
     , fX(0.)
     , fY(0.)
@@ -54,6 +56,7 @@ FairMCEventHeader::FairMCEventHeader(EventID iEvent,
                                      Double_t b,
                                      Int_t nPrim)
     : TObject()
+      //    : TNamed("MCEvent", "MC")
     , fRunId(0)
     , fEventId(iEvent)
     , fX(x)

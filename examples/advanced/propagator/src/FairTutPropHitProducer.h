@@ -12,6 +12,9 @@
 
 #include <Rtypes.h>   // for ClassDef
 
+#include "FairTutPropPoint.h"
+#include "FairMCTrack.h"
+
 class TClonesArray;
 
 class FairTutPropHitProducer : public FairTask
@@ -46,8 +49,8 @@ class FairTutPropHitProducer : public FairTask
     std::string fHitsArrayName;
 
     /** Input array from previous already existing data level **/
-    TClonesArray* fPointsArray;
-    TClonesArray* fTracksArray;
+    const std::vector<FairTutPropPoint>* fPointsArray {nullptr};
+    const std::vector<FairMCTrack>* fTracksArray {nullptr};
 
     /** Output array to  new data level**/
     TClonesArray* fHitsArray;

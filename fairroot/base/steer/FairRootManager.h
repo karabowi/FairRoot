@@ -12,6 +12,7 @@
 #include "FairRNTupleSink.h"   // to enable GetOutFile()
 #include "FairSink.h"
 #include "FairSource.h"
+#include "FairRNTupleSource.h"
 
 #include <Rtypes.h>      // for Bool_t, Int_t, UInt_t, etc
 #include <TChain.h>      // for TChain
@@ -491,6 +492,17 @@ TPtr FairRootManager::InitObjectAs(const char* brname)
 
     if (!fSource) {
         return nullptr;
+    }
+
+    if ( fSource->GetSourceType() == kRNTUPLE ) {
+        T* ptr = ((FairRNTupleSource*)(fSource.get()))->InitObjectAs<T*>(brname);
+
+        T** addr = new T*;
+        (*addr) = ptr;
+
+        AddMemoryBranchAny<T>(brname, addr);
+
+        return ptr;
     }
 
     // it does not seem to be the case, let us create the pointer which will be initialized

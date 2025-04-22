@@ -57,8 +57,10 @@ InitStatus FairTutPropHitProducer::Init()
     FairRootManager* ioman = FairRootManager::Instance();
 
     // Get a pointer to the previous already existing data level
-    fPointsArray = static_cast<TClonesArray*>(ioman->GetObject(fPointsArrayName.c_str()));
-    fTracksArray = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
+    //    fPointsArray = static_cast<TClonesArray*>(ioman->GetObject(fPointsArrayName.c_str()));
+    //    fTracksArray = static_cast<TClonesArray*>(ioman->GetObject("MCTrack"));
+    fPointsArray = ioman->InitObjectAs<std::vector<FairTutPropPoint> const*>(fPointsArrayName.c_str());
+    fTracksArray = ioman->InitObjectAs<std::vector<FairMCTrack> const*>("MCTrack");
     if (!fPointsArray || !fTracksArray) {
         LOG(error) << "No InputDataLevelName array!";
         LOG(error) << "FairTutPropHitProducer will be inactive";
@@ -89,18 +91,19 @@ void FairTutPropHitProducer::Exec(Option_t* /*option*/)
     fHitsArray->Delete();
 
     // fill the map
-    FairTutPropPoint* point = nullptr;
+    //    FairTutPropPoint* point = nullptr;
     // FairTutPropHit* hit = nullptr;
-    for (int iPoint = 0; iPoint < fPointsArray->GetEntriesFast(); iPoint++) {
-        point = static_cast<FairTutPropPoint*>(fPointsArray->At(iPoint));
-        if (!point) {
-            continue;
-        }
+    for (int iPoint = 0; iPoint < fPointsArray->size(); iPoint++) {
+        //        point = static_cast<FairTutPropPoint*>(fPointsArray->At(iPoint));
+        FairTutPropPoint point = fPointsArray->at(iPoint);
+        // if (!point) {
+        //     continue;
+        // }
 
         TVector3 position;
         TVector3 momentum;
-        point->Position(position);
-        point->Momentum(momentum);
+        point.Position(position);
+        point.Momentum(momentum);
 
         TVector3 dposition;
         TVector3 dmomentum;
@@ -113,20 +116,21 @@ void FairTutPropHitProducer::Exec(Option_t* /*option*/)
             gRandom->Gaus(momentum.X(), 0.05), gRandom->Gaus(momentum.Y(), 0.05), gRandom->Gaus(momentum.Z(), 0.05));
         // position.SetXYZ(position.X(), position.Y(), position.Z());
 
-        FairMCTrack* track = static_cast<FairMCTrack*>(fTracksArray->At(point->GetTrackID()));
+        //        FairMCTrack* track = static_cast<FairMCTrack*>(fTracksArray->At(point->GetTrackID()));
+        FairMCTrack track = fTracksArray->at(point.GetTrackID());
         TDatabasePDG* dbPDG = TDatabasePDG::Instance();
-        TParticlePDG* particle = dbPDG->GetParticle(track->GetPdgCode());
+        TParticlePDG* particle = dbPDG->GetParticle(track.GetPdgCode());
         double charge = 0;
         if (particle)
             charge = particle->Charge();
 
         // hit = new ((*fHitsArray)[iPoint]) FairTutPropHit(point->GetDetectorID(), iPoint, position, dposition);
-        new ((*fHitsArray)[iPoint]) FairTutPropHit(point->GetDetectorID(),
+        new ((*fHitsArray)[iPoint]) FairTutPropHit(point.GetDetectorID(),
                                                    iPoint,
                                                    position,
                                                    dposition,
-                                                   point->GetTrackID(),
-                                                   track->GetPdgCode(),
+                                                   point.GetTrackID(),
+                                                   track.GetPdgCode(),
                                                    charge,
                                                    momentum,
                                                    dmomentum);

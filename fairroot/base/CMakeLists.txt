@@ -54,6 +54,7 @@ set(sources
   source/FairFileSourceBase.cxx
   source/FairFileSource.cxx
   source/FairMixedSource.cxx
+  source/FairRNTupleSource.cxx
   source/FairSource.cxx
 
   steer/FairLinkManager.cxx
