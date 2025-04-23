@@ -49,6 +49,7 @@ FairRNTupleSink::FairRNTupleSink(const TString* RootFileName, const char* Title)
     , fOutputTitle(Title)
     , fFileName(RootFileName->Data())
 {
+    fRootFile.reset(TFile::Open(fFileName.c_str(), "recreate"));
     fModel = RNTupleModel::Create();
 }
 
@@ -57,6 +58,7 @@ FairRNTupleSink::FairRNTupleSink(const TString RootFileName, const char* Title)
     , fOutputTitle(Title)
     , fFileName(RootFileName.Data())
 {
+    fRootFile.reset(TFile::Open(fFileName.c_str(), "recreate"));
     fModel = RNTupleModel::Create();
 }
 
@@ -79,7 +81,8 @@ void FairRNTupleSink::WriteFolder()
 
 bool FairRNTupleSink::CreatePersistentBranchesAny()
 {
-    fWriter = RNTupleWriter::Recreate(std::move(fModel), "fairdata", fFileName);
+    //    fWriter = RNTupleWriter::Recreate(std::move(fModel), "fairdata", fFileName);
+    fWriter = RNTupleWriter::Append(std::move(fModel), "fairdata", *fRootFile);
     fEntry = fWriter->GetModel().CreateBareEntry();
     for (auto tokenAddress : fTokenAddress) {
         fEntry->BindRawPtr(tokenAddress.first, tokenAddress.second);
@@ -90,8 +93,8 @@ bool FairRNTupleSink::CreatePersistentBranchesAny()
 
 void FairRNTupleSink::WriteObject(TObject* f, const char* name, Int_t option)
 {
-    //    fRootFile->cd();
-    //    f->Write(name, option);
+    fRootFile->cd();
+    f->Write(name, option);
 }
 
 void FairRNTupleSink::WriteGeometry()

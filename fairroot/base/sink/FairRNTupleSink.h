@@ -80,8 +80,10 @@ class FairRNTupleSink : public FairSink
   private:
     /** Title of input sink, could be input, background or signal*/
     std::string fOutputTitle;
-    /** ROOT file */
+    /** file name */
     std::string fFileName;
+    /** ROOT file */
+    std::unique_ptr<TFile> fRootFile;
     /** Output Tree  */
     /** Initialization flag, true if initialized */
     Bool_t fIsInitialized{kFALSE};
