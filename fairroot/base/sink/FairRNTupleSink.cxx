@@ -40,9 +40,9 @@ R__LOAD_LIBRARY(ROOTNTuple)
 #include <fairlogger/Logger.h>
 #include <string>
 
-using REntry = ROOT::Experimental::REntry;
-using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
-using RNTupleModel = ROOT::Experimental::RNTupleModel;
+using REntry = ROOT::REntry;
+using RNTupleWriter = ROOT::RNTupleWriter;
+using RNTupleModel = ROOT::RNTupleModel;
 
 FairRNTupleSink::FairRNTupleSink(const TString* RootFileName, const char* Title)
     : FairSink()
