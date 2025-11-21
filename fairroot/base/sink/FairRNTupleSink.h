@@ -32,10 +32,10 @@ R__LOAD_LIBRARY(ROOTNTuple)
 #include <memory>
 #include <typeinfo>
 
-using REntry = ROOT::Experimental::REntry;
-using ROOT::Experimental::RNTupleFillStatus;
-using RNTupleModel = ROOT::Experimental::RNTupleModel;
-using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
+using REntry = ROOT::REntry;
+using ROOT::RNTupleFillStatus;
+using RNTupleModel = ROOT::RNTupleModel;
+using RNTupleWriter = ROOT::RNTupleWriter;
 
 class FairEventHeader;
 class FairFileHeader;
@@ -97,7 +97,7 @@ class FairRNTupleSink : public FairSink
 
     bool fPersistentBranchesDone{false};   //!
 
-    std::vector<std::pair<REntry::RFieldToken, void*>> fTokenAddress;
+    std::vector<std::pair<ROOT::RFieldToken, void*>> fTokenAddress;
 
     ClassDefOverride(FairRNTupleSink, 1);
 };

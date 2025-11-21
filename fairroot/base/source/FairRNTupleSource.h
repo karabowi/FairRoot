@@ -37,7 +37,7 @@ R__LOAD_LIBRARY(ROOTNTuple)
 #include <map>
 #include <memory>
 
-using RNTupleReader = ROOT::Experimental::RNTupleReader;
+using RNTupleReader = ROOT::RNTupleReader;
 
 class FairEventHeader;
 class FairFileHeader;
