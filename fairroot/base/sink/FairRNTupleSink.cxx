@@ -74,6 +74,11 @@ void FairRNTupleSink::Reset() {}
 
 void FairRNTupleSink::FillEventHeader(FairEventHeader* /* feh */) {}
 
+void FairRNTupleSink::RegisterImpl(const char* name, const char* folderName, void* obj)
+{
+    LOG(error) << "Registering " << name << " not implemented in FairRNTupleSink. Use RegisterAny.";
+}
+
 void FairRNTupleSink::WriteFolder()
 {
     CreatePersistentBranchesAny();
@@ -81,7 +86,6 @@ void FairRNTupleSink::WriteFolder()
 
 bool FairRNTupleSink::CreatePersistentBranchesAny()
 {
-    //    fWriter = RNTupleWriter::Recreate(std::move(fModel), "fairdata", fFileName);
     fWriter = RNTupleWriter::Append(std::move(fModel), "fairdata", *fRootFile);
     fEntry = fWriter->GetModel().CreateBareEntry();
     for (auto tokenAddress : fTokenAddress) {
@@ -99,7 +103,7 @@ void FairRNTupleSink::WriteObject(TObject* f, const char* name, Int_t option)
 
 void FairRNTupleSink::WriteGeometry()
 {
-    //    fRootFile->WriteTObject(gGeoManager);
+    fRootFile->WriteTObject(gGeoManager);
 }
 
 void FairRNTupleSink::Fill()

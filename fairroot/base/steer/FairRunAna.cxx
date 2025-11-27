@@ -191,7 +191,7 @@ void FairRunAna::Init()
         fRunId = GetEvtHeaderRunId();
 
         // Copy the Event Header Info to Output
-        evtHeader->Register(GetSink() ? fStoreEventHeader : false);
+        fRootManager->RegisterAny("EventHeader", evtHeader, fStoreEventHeader);
 
         // Init the containers in Tasks
         LOG(info) << "--- Initialize with RunId  --- " << fRunId;

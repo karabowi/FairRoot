@@ -108,7 +108,7 @@ Bool_t FairRNTupleSource::Init()
     // Loop through the top-level fields of the input RNTuple
     for (const auto &value : fReader->GetModel().GetDefaultEntry()) {
         LOG(info) << "FIELDNAME = \"" << value.GetField().GetFieldName() << "\"";
-        if ( value.GetField().GetFieldName() == "MCEventHeaderx" )
+        if ( value.GetField().GetFieldName() == "MCEventHeader" )
             fMCHeader = value.GetPtr<FairMCEventHeader>().get();
         else if ( value.GetField().GetFieldName() == "EventHeader" )
             fEvtHeader = value.GetPtr<FairEventHeader>().get();

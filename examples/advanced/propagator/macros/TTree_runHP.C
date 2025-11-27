@@ -25,34 +25,34 @@ int TTree_runHP()
     TString parFile = "ttree_prop.par.root";
 
     // Output file
-    TString outFile = "ttree_prop.hits.root";
+    TString outFile = "ttree_prop.r_hits.root";
 
     // -----   Timer   --------------------------------------------------------
     TStopwatch timer;
 
     // -----   Reconstruction run   -------------------------------------------
-    FairRunAna* fRun = new FairRunAna();
-    fRun->SetSource(new FairFileSource(inFile));
-    fRun->SetSink(new FairRootFileSink(outFile));
+    FairRunAna run{};
+    run.SetSource(new FairFileSource(inFile));
+    run.SetSink(std::make_unique<FairRNTupleSink>(outFile));
 
-    FairRuntimeDb* rtdb = fRun->GetRuntimeDb();
+    FairRuntimeDb* rtdb = run.GetRuntimeDb();
     FairParRootFileIo* parInput1 = new FairParRootFileIo();
     parInput1->open(parFile.Data());
 
     rtdb->setFirstInput(parInput1);
 
     FairTutPropHitProducer* hpTask = new FairTutPropHitProducer();
-    fRun->AddTask(hpTask);
+    run.AddTask(hpTask);
 
     FairTutPropHitProducer* hpTask2 = new FairTutPropHitProducer();
     hpTask2->SetPointsArrayName("FairTutPropPoint2");
     hpTask2->SetHitsArrayName("FairTutPropHits2");
-    fRun->AddTask(hpTask2);
+    run.AddTask(hpTask2);
 
-    fRun->Init();
+    run.Init();
 
     timer.Start();
-    fRun->Run();
+    run.Run();
 
     // -----   Finish   -------------------------------------------------------
 

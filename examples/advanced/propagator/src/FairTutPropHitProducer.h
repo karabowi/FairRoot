@@ -12,6 +12,7 @@
 
 #include <Rtypes.h>   // for ClassDef
 
+#include "FairTutPropHit.h"
 #include "FairTutPropPoint.h"
 #include "FairMCTrack.h"
 
@@ -53,7 +54,7 @@ class FairTutPropHitProducer : public FairTask
     const std::vector<FairMCTrack>* fTracksArray {nullptr};
 
     /** Output array to  new data level**/
-    TClonesArray* fHitsArray;
+    std::vector<FairTutPropHit>* fHitsArray{new std::vector<FairTutPropHit>};
 
     FairTutPropHitProducer(const FairTutPropHitProducer&);
     FairTutPropHitProducer operator=(const FairTutPropHitProducer&);

@@ -24,7 +24,7 @@ FairTutPropHitProducer::FairTutPropHitProducer()
     , fHitsArrayName("FairTutPropHits")
     , fPointsArray(nullptr)
     , fTracksArray(nullptr)
-    , fHitsArray(new TClonesArray("FairTutPropHit", 100))
+      //    , fHitsArray(new TClonesArray("FairTutPropHit", 100))
 {
     LOG(debug) << "Default Constructor of FairTutPropHitProducer";
 }
@@ -32,8 +32,8 @@ FairTutPropHitProducer::FairTutPropHitProducer()
 FairTutPropHitProducer::~FairTutPropHitProducer()
 {
     LOG(debug) << "Destructor of FairTutPropHitProducer";
-    fHitsArray->Delete();
-    delete fHitsArray;
+    fHitsArray->clear();
+    //    delete fHitsArray;
 }
 
 void FairTutPropHitProducer::SetParContainers()
@@ -69,7 +69,7 @@ InitStatus FairTutPropHitProducer::Init()
 
     // Create the TClonesArray for the output data and register
     // it in the IO manager
-    ioman->Register(fHitsArrayName.c_str(), "TutProp", fHitsArray, kTRUE);
+    ioman->RegisterAny(fHitsArrayName.c_str(), fHitsArray, kTRUE);
 
     // Do whatever else is needed at the initilization stage
     // Create histograms to be filled
@@ -88,7 +88,7 @@ void FairTutPropHitProducer::Exec(Option_t* /*option*/)
 {
     LOG(debug) << "Exec of FairTutPropHitProducer";
 
-    fHitsArray->Delete();
+    fHitsArray->clear();
 
     // fill the map
     //    FairTutPropPoint* point = nullptr;
@@ -125,15 +125,15 @@ void FairTutPropHitProducer::Exec(Option_t* /*option*/)
             charge = particle->Charge();
 
         // hit = new ((*fHitsArray)[iPoint]) FairTutPropHit(point->GetDetectorID(), iPoint, position, dposition);
-        new ((*fHitsArray)[iPoint]) FairTutPropHit(point.GetDetectorID(),
-                                                   iPoint,
-                                                   position,
-                                                   dposition,
-                                                   point.GetTrackID(),
-                                                   track.GetPdgCode(),
-                                                   charge,
-                                                   momentum,
-                                                   dmomentum);
+        fHitsArray->push_back(FairTutPropHit(point.GetDetectorID(),
+                                             iPoint,
+                                             position,
+                                             dposition,
+                                             point.GetTrackID(),
+                                             track.GetPdgCode(),
+                                             charge,
+                                             momentum,
+                                             dmomentum));
     }
 }
 

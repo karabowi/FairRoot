@@ -63,7 +63,7 @@ class FairRNTupleSink : public FairSink
 
     Int_t Write(const char* name = nullptr, Int_t option = 0, Int_t bufsize = 0) override;
 
-    void RegisterImpl(const char*, const char*, void*) override{};
+    void RegisterImpl(const char*, const char*, void*) override;
     void RegisterAny(const char* brname, const std::type_info& oi, const std::type_info& pi, void* obj) override{};
 
     template<typename T>
