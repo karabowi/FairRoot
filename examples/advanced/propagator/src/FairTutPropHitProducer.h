@@ -46,8 +46,8 @@ class FairTutPropHitProducer : public FairTask
     void SetHitsArrayName(const std::string& tempName) { fHitsArrayName = tempName; };
 
   private:
-    std::string fPointsArrayName;
-    std::string fHitsArrayName;
+    std::string fPointsArrayName {"FairTutPropPoint"};
+    std::string fHitsArrayName {"FairTutPropHits"};
 
     /** Input array from previous already existing data level **/
     const std::vector<FairTutPropPoint>* fPointsArray {nullptr};

@@ -20,11 +20,6 @@
 
 FairTutPropHitProducer::FairTutPropHitProducer()
     : FairTask("FairTutPropHitProducer")
-    , fPointsArrayName("FairTutPropPoint")
-    , fHitsArrayName("FairTutPropHits")
-    , fPointsArray(nullptr)
-    , fTracksArray(nullptr)
-      //    , fHitsArray(new TClonesArray("FairTutPropHit", 100))
 {
     LOG(debug) << "Default Constructor of FairTutPropHitProducer";
 }

@@ -48,7 +48,9 @@ class FairTutPropTr : public FairTask
     bool fPropagatorSet;
 
     /** Input array of Points **/
-    TClonesArray* fPointArray;
+    std::string fPointsArrayName {"FairTutPropPoint"};
+
+    const std::vector<FairTutPropPoint>* fPointsArray {nullptr};
 
     /** Output array of Hits **/
     TClonesArray* fTrackParIni;     // initial MC track parameters

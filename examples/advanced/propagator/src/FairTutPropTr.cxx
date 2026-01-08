@@ -25,7 +25,6 @@
 FairTutPropTr::FairTutPropTr()
     : FairTask("FairTutPropTr")
     , fPropagatorSet(false)
-    , fPointArray(0)
     , fTrackParIni(0)
     , fTrackParFinal(0)
     , fTrackParProp(0)
@@ -81,7 +80,7 @@ InitStatus FairTutPropTr::Init()
 
     // Get input array
 
-    fPointArray = static_cast<TClonesArray*>(ioman->GetObject("FairTutPropPoint"));
+    fPointsArray = ioman->InitObjectAs<std::vector<FairTutPropPoint> const*>(fPointsArrayName.c_str());
 
     return kSUCCESS;
 }
@@ -112,80 +111,77 @@ void FairTutPropTr::Exec(Option_t*)
 
     LOG(debug) << "FairTutPropTr::Exec";
 
-    Int_t NoOfEntries = fPointArray->GetEntriesFast();
+    Int_t NoOfEntries = fPointsArray->size();
     LOG(debug) << "fPointArray has " << NoOfEntries << " entries";
     for (Int_t i = 0; i < NoOfEntries; i++) {
-        FairTutPropPoint* point1 = static_cast<FairTutPropPoint*>(fPointArray->At(i));
-        if (point1->GetZ() > 15.)
+        FairTutPropPoint point1 = fPointsArray->at(i);
+        if (point1.GetZ() > 15.)
             continue;
         LOG(debug) << "first loop for " << i << "from " << NoOfEntries << " entries ";
-        Int_t trId = point1->GetTrackID();
-        FairTutPropPoint* point2 = 0;
+        Int_t trId = point1.GetTrackID();
         for (Int_t k = 0; k < NoOfEntries; k++) {
-            point2 = static_cast<FairTutPropPoint*>(fPointArray->At(k));
-            if (point2->GetZ() < 35.)
+            FairTutPropPoint point2 = fPointsArray->at(k);
+            if (point2.GetZ() < 35.)
                 continue;
             LOG(debug) << "second loop for " << k;
-            if (point2->GetTrackID() == trId)
-                break;
-        }
+            if (point2.GetTrackID() != trId)
+                continue;
 
-        if (point2 == 0)
+            TVector3 StartPos(point1.GetX(), point1.GetY(), point1.GetZ());
+            TVector3 StartPosErr(0, 0, 0);
+            TVector3 StartMom(point1.GetPx(), point1.GetPy(), point1.GetPz());
+            TVector3 StartMomErr(0, 0, 0);
+
+            TVector3 EndPos(point2.GetX(), point2.GetY(), point2.GetZ());
+            TVector3 EndPosErr(0, 0, 0);
+            TVector3 EndMom(point2.GetPx(), point2.GetPy(), point2.GetPz());
+            TVector3 EndMomErr(0, 0, 0);
+
+            Int_t PDGCode = -13;
+
+            TDatabasePDG* fdbPDG = TDatabasePDG::Instance();
+            TParticlePDG* fParticle = fdbPDG->GetParticle(PDGCode);
+            Double_t fCharge = fParticle->Charge();
+
+            TClonesArray& clref1 = *fTrackParIni;
+            Int_t size1 = clref1.GetEntriesFast();
+            FairTrackParP* fStart = new (clref1[size1]) FairTrackParP(StartPos,
+                                                                      StartMom,
+                                                                      StartPosErr,
+                                                                      StartMomErr,
+                                                                      fCharge,
+                                                                      TVector3(0., 0., 10.),
+                                                                      TVector3(1., 0., 0.),
+                                                                      TVector3(0., 1., 0.));
+            //  fStart->Print();
+
+            TClonesArray& clref = *fTrackParProp;
+            Int_t size = clref.GetEntriesFast();
+            FairTrackParP* fRes = new (clref[size]) FairTrackParP();
+            // fRes->Print();
+
+            TClonesArray& clrew = *fTrackParWrong;
+            Int_t sizeW = clrew.GetEntriesFast();
+            FairTrackParP* fWro = new (clrew[sizeW]) FairTrackParP();
+            // fRes->Print();
+
+            TClonesArray& clref2 = *fTrackParFinal;
+            Int_t size2 = clref2.GetEntriesFast();
+            [[gnu::unused]] FairTrackParP* fFinal = new (clref2[size2]) FairTrackParP(EndPos,
+                                                                                      EndMom,
+                                                                                      EndPosErr,
+                                                                                      EndMomErr,
+                                                                                      fCharge,
+                                                                                      TVector3(0., 0., 40.),
+                                                                                      TVector3(1., 0., 0.),
+                                                                                      TVector3(0., 1., 0.));
+
+            fPro->Propagate(fStart, fRes, PDGCode);
+
+            // use wrong pdg code
+            fPro->Propagate(fStart, fWro, -PDGCode);
+
             break;
-
-        TVector3 StartPos(point1->GetX(), point1->GetY(), point1->GetZ());
-        TVector3 StartPosErr(0, 0, 0);
-        TVector3 StartMom(point1->GetPx(), point1->GetPy(), point1->GetPz());
-        TVector3 StartMomErr(0, 0, 0);
-
-        TVector3 EndPos(point2->GetX(), point2->GetY(), point2->GetZ());
-        TVector3 EndPosErr(0, 0, 0);
-        TVector3 EndMom(point2->GetPx(), point2->GetPy(), point2->GetPz());
-        TVector3 EndMomErr(0, 0, 0);
-
-        Int_t PDGCode = -13;
-
-        TDatabasePDG* fdbPDG = TDatabasePDG::Instance();
-        TParticlePDG* fParticle = fdbPDG->GetParticle(PDGCode);
-        Double_t fCharge = fParticle->Charge();
-
-        TClonesArray& clref1 = *fTrackParIni;
-        Int_t size1 = clref1.GetEntriesFast();
-        FairTrackParP* fStart = new (clref1[size1]) FairTrackParP(StartPos,
-                                                                  StartMom,
-                                                                  StartPosErr,
-                                                                  StartMomErr,
-                                                                  fCharge,
-                                                                  TVector3(0., 0., 10.),
-                                                                  TVector3(1., 0., 0.),
-                                                                  TVector3(0., 1., 0.));
-        //  fStart->Print();
-
-        TClonesArray& clref = *fTrackParProp;
-        Int_t size = clref.GetEntriesFast();
-        FairTrackParP* fRes = new (clref[size]) FairTrackParP();
-        // fRes->Print();
-
-        TClonesArray& clrew = *fTrackParWrong;
-        Int_t sizeW = clrew.GetEntriesFast();
-        FairTrackParP* fWro = new (clrew[sizeW]) FairTrackParP();
-        // fRes->Print();
-
-        TClonesArray& clref2 = *fTrackParFinal;
-        Int_t size2 = clref2.GetEntriesFast();
-        [[gnu::unused]] FairTrackParP* fFinal = new (clref2[size2]) FairTrackParP(EndPos,
-                                                                                  EndMom,
-                                                                                  EndPosErr,
-                                                                                  EndMomErr,
-                                                                                  fCharge,
-                                                                                  TVector3(0., 0., 40.),
-                                                                                  TVector3(1., 0., 0.),
-                                                                                  TVector3(0., 1., 0.));
-
-        fPro->Propagate(fStart, fRes, PDGCode);
-
-        // use wrong pdg code
-        fPro->Propagate(fStart, fWro, -PDGCode);
 
         /*
         LOG(info) << "SetPCAPropagation from " << fFinal->GetX() << ", " << fFinal->GetY() << ", " << fFinal->GetZ()
@@ -206,6 +202,7 @@ void FairTutPropTr::Exec(Option_t*)
                   << ", on the wire (" << pcaToWire.OnWirePCA.X() << "," << pcaToWire.OnWirePCA.Y() << "," <<
         pcaToWire.OnWirePCA.Z() << ")";
         */
+        }
     }
 }
 
