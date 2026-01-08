@@ -200,8 +200,8 @@ int run_tutorial1(int nEvents = 10, string mcEngine = "TGeant3", bool isMT = tru
         std::cerr << "Wrong number of branches (" << nofB << " instead of 3) in the output chain." << endl;
         return 1;
     }
-    if (nofL != 46) {
-        std::cerr << "Wrong number of leaves (" << nofL << " instead of 46) in the output chain." << endl;
+    if (nofL != 46 && nofL != 44) {
+        std::cerr << "Wrong number of leaves (" << nofL << " instead of 46 for TNamed or 44 for TObject FairMCEventHeader) in the output chain." << endl;
         return 1;
     }
     cout << "Simulation successful." << endl;
