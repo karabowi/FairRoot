@@ -11,6 +11,7 @@
 #include "FairRootManager.h"   // for FairRootManager
 #include "FairRun.h"           // for FairRun
 #include "FairRunInfo.h"       // for FairRunInfo
+#include "FairEventHeader.h"   // for FairEventHeader
 
 #include <Rtypes.h>    // for Bool_t, Double_t, UInt_t, etc
 #include <TF1.h>       //
@@ -129,6 +130,8 @@ class FairRunAna : public FairRun
     TF1* fTimeProb;   //!
     /** Flag for proccessing lmd-files*/
     Bool_t fFinishProcessingLMDFile;   //!
+
+    FairEventHeader* fEventHeader;
 
     /** Temporary member to preserve old functionality without setting source in macro */
     FairFileSource* fFileSource;   //!

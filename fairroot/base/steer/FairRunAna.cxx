@@ -182,7 +182,7 @@ void FairRunAna::Init()
 
     // Assure that basic info is there for the run
     //  if(par && fInputFile) {
-    auto* evtHeader = GetEventHeader();
+    fEventHeader = GetEventHeader();
     if (par && fInFileIsOpen) {
 
         LOG(info) << "Parameter and input file are available, Assure that basic info is there for the run!";
@@ -191,7 +191,7 @@ void FairRunAna::Init()
         fRunId = GetEvtHeaderRunId();
 
         // Copy the Event Header Info to Output
-        fRootManager->RegisterAny("EventHeader", evtHeader, fStoreEventHeader);
+        fRootManager->RegisterAny("EventHeader.", fEventHeader, fStoreEventHeader);
 
         // Init the containers in Tasks
         LOG(info) << "--- Initialize with RunId  --- " << fRunId;
@@ -201,11 +201,11 @@ void FairRunAna::Init()
         fTask->SetParTask();
     } else {   // end----- if(fMixedInput)
         LOG(info) << "Initializing without input file or Mixed input";
-        evtHeader->Register(GetSink() ? fStoreEventHeader : false);
+        fRootManager->RegisterAny("EventHeader.", fEventHeader, fStoreEventHeader);
         FairRunIdGenerator genid;
         fRunId = genid.generateId();
         fRtdb->addRun(fRunId);
-        evtHeader->SetRunId(fRunId);
+        fEventHeader->SetRunId(fRunId);
         fTask->SetParTask();
         if (!fRtdb->initContainers(fRunId)) {
             LOG(error) << "FairRunAna::Init: fRtdb->initContainers failed";
