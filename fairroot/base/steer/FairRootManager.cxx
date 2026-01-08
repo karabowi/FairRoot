@@ -162,7 +162,6 @@ void FairRootManager::RegisterImpl(const char* name, const char* folderName, T* 
     }
 
     if (toFile) { /**Write the Object to the Tree*/
-        //        obj->SetName(name);
         if (fSink) {
             fSink->RegisterImpl(name, folderName, obj);
         } else {
@@ -184,6 +183,7 @@ void FairRootManager::Register(const char* name, const char* folderName, TObject
 
 void FairRootManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile)
 {
+    obj->SetName(name);
     RegisterImpl(name, folderName, obj, toFile);
 }
 
@@ -202,6 +202,7 @@ Int_t FairRootManager::AddBranchToList(const char* name)
 
 void FairRootManager::Register(const char* name, const char* foldername, TCollection* obj, Bool_t toFile)
 {
+    obj->SetName(name);
     RegisterImpl(name, foldername, obj, toFile);
 }
 
