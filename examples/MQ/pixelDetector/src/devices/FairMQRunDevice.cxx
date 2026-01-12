@@ -93,6 +93,20 @@ void FairMQRunDevice::SendBranches(FairOnlineSink& sink)
                             parts.AddPart(std::move(mess));
                             LOG(debug) << "channel >" << mi.first << "< --> >" << ObjStr->GetString().Data() << "<";
                         }
+                    }
+                    else if (ObjStr->GetString().CompareTo("MCEventHeader") == 0) {
+                        auto mcEventHeader = sink.GetPersistentBranchAny<FairMCEventHeader**>(ObjStr->GetString());
+                        if (mcEventHeader) {
+                            (*mcEventHeader)->SetName("MCEventHeader");
+                            LOG(debug) << "[" << FairRootManager::Instance()->GetInstanceId() << "] mcEventHeader "
+                                       << mcEventHeader << " /// *mcEventHeader " << *mcEventHeader
+                                       << " /// *mcEventHeader->GetName() " << (*mcEventHeader)->GetName();
+                            TObject* objClone = (*mcEventHeader)->Clone();
+                            auto mess(NewMessage());
+                            RootSerializer().Serialize(*mess, objClone);
+                            parts.AddPart(std::move(mess));
+                            LOG(debug) << "channel >" << mi.first << "< --> >" << ObjStr->GetString().Data() << "<";
+                        }
                     } else {
                         LOG(warning) << "FairMQRunDevice::SendBranches() hasn't got knowledge how to send any branch \""
                                      << ObjStr->GetString().Data() << "\"";

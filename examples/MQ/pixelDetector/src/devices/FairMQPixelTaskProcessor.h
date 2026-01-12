@@ -75,7 +75,7 @@ class FairMQPixelTaskProcessor : public fair::mq::Device
             TObject* obj = nullptr;
             RootSerializer().Deserialize(*part, obj);
             tempObjects.push_back(obj);
-            if (strcmp(tempObjects.back()->GetName(), "EventHeader.") == 0) {
+            if (strcmp(tempObjects.back()->GetName(), "EventHeader.") == 0 || strcmp(tempObjects.back()->GetName(), "FairEventHeader") == 0) {
                 fEventHeader = (FairEventHeader*)(tempObjects.back());
             }
             if (strcmp(tempObjects.back()->GetName(), "MCEventHeader.") == 0) {

@@ -18,6 +18,9 @@
 #include "FairRootManager.h"
 #include "FairRunAna.h"
 #include "FairSource.h"
+
+#include "FairEventHeader.h"
+
 #include "RootSerializer.h"
 
 #include <Rtypes.h>
@@ -59,6 +62,7 @@ void FairMQPixelSampler::InitTask()
         }
     }
 
+    fRunAna->SetSource(fSource);
     fSource->Init();
 
     auto& frm = fRunAna->GetRootManager();
@@ -76,10 +80,24 @@ void FairMQPixelSampler::InitTask()
                     tca->SetName(branchName.c_str());
                 }
             }
-            fNObjects++;
         } else {
+            if (branchName == "EventHeader.") {
+                const FairEventHeader* eh = frm.InitObjectAs<FairEventHeader const*>("EventHeader.");
+                if (!eh) {
+                    LOG(info) << "FairEventHeader not found in the input tree";
+                }
+                else {
+                    LOG(info) << "FairEventHeader found in input tree";
+                    fInputObjects[fNObjects] = const_cast<FairEventHeader*>(eh);
+                }
+            }
+        }
+        if (fInputObjects[fNObjects]==0) {
             LOG(warn) << "Branch \"" << branchName
                       << "\" not found via FairRootManager::GetObject() at Init.";
+        }
+        else {
+            fNObjects++;
         }
     }
 
