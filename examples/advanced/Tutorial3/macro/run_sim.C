@@ -54,6 +54,7 @@ void run_sim(Int_t nEvents = 100, TString mcEngine = "TGeant4")
     run.SetName(mcEngine);
 
     TString outFile = "data/testrun_";
+    TString outRNTe = outFile + "RN_" + mcEngine + ".root";
     outFile = outFile + mcEngine + ".root";
 
     TString geoFile = "data/geofile_";
@@ -63,6 +64,7 @@ void run_sim(Int_t nEvents = 100, TString mcEngine = "TGeant4")
     parFile = parFile + mcEngine + ".root";
 
     run.SetSink(std::make_unique<FairRootFileSink>(outFile));
+    //    run.SetSink(std::make_unique<FairRNTupleSink>(outRNTe));
     run.SetGenerateRunInfo(kTRUE);   // Create FairRunInfo file
 
     // -----   Magnetic field   -------------------------------------------
@@ -168,6 +170,7 @@ void run_sim(Int_t nEvents = 100, TString mcEngine = "TGeant4")
 
     cout << endl << endl;
     cout << "Output file is " << outFile << endl;
+    cout << "RNTuple file is " << outRNTe << endl;
     cout << "Parameter file is " << parFile << endl;
     cout << "Real time " << rtime << " s, CPU time " << ctime << "s" << endl << endl;
     cout << "Macro finished successfully." << endl;

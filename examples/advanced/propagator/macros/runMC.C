@@ -36,6 +36,7 @@ int runMC(Int_t nEvents = 1000, TString mcEngine = "TGeant4", Bool_t isMT = fals
 
     // Output file name
     TString outFile = Form("%s/prop.mc.root", outDir.Data());
+    TString outRNTe = Form("%s/rnte.mc.root", outDir.Data());
 
     // Parameter file name
     TString parFile = Form("%s/prop.par.root", outDir.Data());
@@ -60,6 +61,7 @@ int runMC(Int_t nEvents = 1000, TString mcEngine = "TGeant4", Bool_t isMT = fals
     //  run.SetSimulationConfig(new FairVMCConfig());
     run.SetIsMT(isMT);   // Multi-threading mode (Geant4 only)
     run.SetSink(std::make_unique<FairRootFileSink>(outFile));
+    //    run.SetSink(std::make_unique<FairRNTupleSink>(outRNTe));
     FairRuntimeDb* rtdb = run.GetRuntimeDb();
     // ------------------------------------------------------------------------
 
