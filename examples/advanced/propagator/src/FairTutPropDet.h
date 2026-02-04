@@ -57,23 +57,28 @@ class FairTutPropDet : public FairDetector
      *  any optional action in your detector during the transport.
      */
 
+    FairModule* CloneModule() const override;
+
     void EndOfEvent() override;
 
+    Bool_t IsSensitive(const std::string& name) override;
+
+    std::string GetPointsArrayName() const { return fPointsArrayName; };
     void SetPointsArrayName(const std::string& tempName) { fPointsArrayName = tempName; };
 
   private:
-    std::string fPointsArrayName;
+    std::string fPointsArrayName{"FairTutPropPoint"};
 
     /** Track information to be stored until the track leaves the
     active volume.
     */
-    Int_t fTrackID;        //!  track index
-    Int_t fVolumeID;       //!  volume id
-    TLorentzVector fPos;   //!  position at entrance
-    TLorentzVector fMom;   //!  momentum at entrance
-    Double32_t fTime;      //!  time
-    Double32_t fLength;    //!  length
-    Double32_t fELoss;     //!  energy loss
+    Int_t fTrackID{-1};        //!  track index
+    Int_t fVolumeID{-1};       //!  volume id
+    TLorentzVector fPos{};   //!  position at entrance
+    TLorentzVector fMom{};   //!  momentum at entrance
+    Double32_t fTime{-1.};      //!  time
+    Double32_t fLength{-1.};    //!  length
+    Double32_t fELoss{-1.};     //!  energy loss
 
     /** container for data points */
     std::vector<FairTutPropPoint>* fPointVector{new std::vector<FairTutPropPoint>};

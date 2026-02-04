@@ -43,14 +43,11 @@ FairTutPropDet::FairTutPropDet()
 
 FairTutPropDet::FairTutPropDet(const char* name, Bool_t active)
     : FairDetector(name, active, kTutProp)
-    , fPointsArrayName("FairTutPropPoint")
-    , fTrackID(-1)
-    , fVolumeID(-1)
-    , fPos()
-    , fMom()
-    , fTime(-1.)
-    , fLength(-1.)
-    , fELoss(-1)
+{}
+
+FairTutPropDet::FairTutPropDet(const FairTutPropDet& rhs)
+    : FairDetector(rhs)
+    , fPointsArrayName(rhs.GetPointsArrayName())
 {}
 
 FairTutPropDet::~FairTutPropDet() {}
@@ -127,6 +124,19 @@ void FairTutPropDet::Reset()
     fPointVector->clear();
 }
 
+Bool_t FairTutPropDet::IsSensitive(const std::string& name)
+{
+    if (name.find("Pixel") != std::string::npos) {
+        if (GetGeometryFileName().EndsWith("tutProp.geo") && atoi(&name[5]) <= 4) {
+            return kTRUE;
+        }
+        if (GetGeometryFileName().EndsWith("tutProp2.geo") && atoi(&name[5]) >= 5) {
+            return kTRUE;
+        }
+    }
+    return kFALSE;
+}
+
 void FairTutPropDet::ConstructGeometry()
 {
     /** If you are using the standard ASCII input for the geometry
@@ -146,4 +156,9 @@ void FairTutPropDet::AddHit(Int_t trackID,
 {
     fPointVector->push_back(FairTutPropPoint(trackID, detID, pos, mom, time, length, eLoss));
     return;
+}
+
+FairModule* FairTutPropDet::CloneModule() const
+{
+    return new FairTutPropDet(*this);
 }
