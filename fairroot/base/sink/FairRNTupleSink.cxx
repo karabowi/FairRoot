@@ -62,6 +62,35 @@ FairRNTupleSink::FairRNTupleSink(const TString RootFileName, const char* Title)
     fModel = RNTupleModel::Create();
 }
 
+FairRNTupleSink::FairRNTupleSink(RNTParaWriter* paraWriter)
+    : FairSink()
+{
+    SetParallelWriter(paraWriter);
+}
+
+/*FairRNTupleSink::~FairRNTupleSink()
+{
+    if (fModel) {
+        fModel.reset();
+    }
+    if (fWriter) {
+        fWriter.reset();
+    }
+    if (fParaWriter) {
+        fParaWriter.reset();
+    }
+    if (fFillContext) {
+        fFillContext.reset();
+    }
+    if (fEntry) {
+        fEntry.reset();
+    }
+    if (fRootFile) {
+        fRootFile->Close();
+        fRootFile.reset();
+    }
+}*/
+
 Bool_t FairRNTupleSink::InitSink()
 {
     fIsInitialized = kTRUE;
@@ -81,15 +110,38 @@ void FairRNTupleSink::RegisterImpl(const char* name, const char* folderName, voi
 
 void FairRNTupleSink::WriteFolder()
 {
-    CreatePersistentBranchesAny();
+    if (fParaWriter) {
+        if (FairRootManager::Instance()->GetInstanceId() > 0) {
+            CreateParallelPersistentBranchesAny();
+        }
+    }
+    else {
+        CreatePersistentBranchesAny();
+    }
+}
+
+void FairRNTupleSink::CreateParallelWriter() {
+    fParaWriter = RNTupleParallelWriter::Append(std::move(fModel), "fairdata", *fRootFile);
+}
+
+bool FairRNTupleSink::CreateParallelPersistentBranchesAny() {
+    fFillContext = fParaWriter->CreateFillContext();
+    fEntry = fFillContext->CreateEntry();
+    for (auto nameAddress : fNameAddress) {
+        LOG(debug) << "Parall BindRawPtr " << nameAddress.first << " @ " << nameAddress.second;
+        fEntry->BindRawPtr(nameAddress.first, nameAddress.second);
+    }
+    fPersistentBranchesDone = true;
+    return true;
 }
 
 bool FairRNTupleSink::CreatePersistentBranchesAny()
 {
     fWriter = RNTupleWriter::Append(std::move(fModel), "fairdata", *fRootFile);
     fEntry = fWriter->GetModel().CreateBareEntry();
-    for (auto tokenAddress : fTokenAddress) {
-        fEntry->BindRawPtr(tokenAddress.first, tokenAddress.second);
+    for (auto nameAddress : fNameAddress) {
+        LOG(debug) << "BindRawPtr " << nameAddress.first << " @ " << nameAddress.second;
+        fEntry->BindRawPtr(nameAddress.first, nameAddress.second);
     }
     fPersistentBranchesDone = true;
     return true;
@@ -97,6 +149,8 @@ bool FairRNTupleSink::CreatePersistentBranchesAny()
 
 void FairRNTupleSink::WriteObject(TObject* f, const char* name, Int_t option)
 {
+    if (FairRootManager::Instance()->GetInstanceId() != 0)
+        return;
     fRootFile->cd();
     f->Write(name, option);
 }
@@ -108,23 +162,40 @@ void FairRNTupleSink::WriteGeometry()
 
 void FairRNTupleSink::Fill()
 {
-    RNTupleFillStatus status;
-    fWriter->FillNoFlush(*fEntry, status);
-    if (status.ShouldFlushCluster()) {
-        // If we are asked to flush, first try to do as much work as possible outside of the critical section:
-        // FlushColumns() will flush column data and trigger compression, but not actually write to storage.
-        // (A framework may of course also decide to flush more often.)
-        fWriter->FlushColumns();
-
-        {
-            // FlushCluster() will flush data to the underlying TFile, so it requires synchronization.
-            fWriter->FlushCluster();
+    if (!fParaWriter) {
+        RNTupleFillStatus status;
+        fWriter->FillNoFlush(*fEntry, status);
+        if (status.ShouldFlushCluster()) {
+            // If we are asked to flush, first try to do as much work as possible outside of the critical section:
+            // FlushColumns() will flush column data and trigger compression, but not actually write to storage.
+            // (A framework may of course also decide to flush more often.)
+            fWriter->FlushColumns();
+            {
+                // FlushCluster() will flush data to the underlying TFile, so it requires synchronization.
+                fWriter->FlushCluster();
+            }
         }
+    }
+    else {
+        fFillContext->Fill(*fEntry);
     }
 }
 
 Int_t FairRNTupleSink::Write(const char*, Int_t, Int_t)
 {
+    if (fParaWriter) {
+        if (FairRootManager::Instance()->GetInstanceId() == 0) {
+            fParaWriter.reset();
+        }
+        else {
+            fEntry.reset();
+            fFillContext.reset();
+        }
+    }
+    else {
+        fModel.reset();
+        fWriter.reset();
+    }
     return 0;
 }
 //_____________________________________________________________________________
@@ -132,6 +203,8 @@ Int_t FairRNTupleSink::Write(const char*, Int_t, Int_t)
 //_____________________________________________________________________________
 FairSink* FairRNTupleSink::CloneSink()
 {
-    return nullptr;
+    FairRNTupleSink* newSink = new FairRNTupleSink(this->GetParallelWriterRawPtr());
+
+    return newSink;
 }
 //_____________________________________________________________________________

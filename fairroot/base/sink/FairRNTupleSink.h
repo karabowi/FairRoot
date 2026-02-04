@@ -23,6 +23,7 @@ R__LOAD_LIBRARY(ROOTNTuple)
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleFillStatus.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleParallelWriter.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <Rtypes.h>
 #include <TBranch.h>
@@ -32,10 +33,14 @@ R__LOAD_LIBRARY(ROOTNTuple)
 #include <memory>
 #include <typeinfo>
 
+using ROOT::Experimental::RNTupleParallelWriter;
+
 using REntry = ROOT::REntry;
 using ROOT::RNTupleFillStatus;
 using RNTupleModel = ROOT::RNTupleModel;
 using RNTupleWriter = ROOT::RNTupleWriter;
+using RNTupleFillContext = ROOT::Experimental::RNTupleFillContext;
+using RNTParaWriter = ROOT::Experimental::RNTupleParallelWriter;
 
 class FairEventHeader;
 class FairFileHeader;
@@ -70,7 +75,8 @@ class FairRNTupleSink : public FairSink
     void RegisterRNTuple(const char* name, T*& obj);
 
     void WriteFolder() override;
-    bool CreatePersistentBranchesAny() override;
+
+    void CreateParallelWriter();
 
     void WriteObject(TObject* f, const char*, Int_t option = 0) override;
     void WriteGeometry() override;
@@ -78,10 +84,22 @@ class FairRNTupleSink : public FairSink
     FairSink* CloneSink() override;
 
   private:
+    FairRNTupleSink(RNTParaWriter* paraWriter);
+
+    bool CreatePersistentBranchesAny() override;
+    bool CreateParallelPersistentBranchesAny();
+
+    void SetParallelWriter(RNTParaWriter* paraWriter) {
+        fParaWriter.reset(paraWriter);
+    }
+    RNTParaWriter* GetParallelWriterRawPtr() {
+        return fParaWriter.get();
+    }
+
     /** Title of input sink, could be input, background or signal*/
-    std::string fOutputTitle;
+    std::string fOutputTitle{""};
     /** file name */
-    std::string fFileName;
+    std::string fFileName{""};
     /** ROOT file */
     std::unique_ptr<TFile> fRootFile;
     /** Output Tree  */
@@ -90,6 +108,8 @@ class FairRNTupleSink : public FairSink
 
     std::unique_ptr<RNTupleModel> fModel;
     std::unique_ptr<RNTupleWriter> fWriter;
+    std::unique_ptr<RNTParaWriter> fParaWriter;
+    std::shared_ptr<RNTupleFillContext> fFillContext;
     std::unique_ptr<REntry> fEntry;
 
     /**File Header*/
@@ -97,7 +117,7 @@ class FairRNTupleSink : public FairSink
 
     bool fPersistentBranchesDone{false};   //!
 
-    std::vector<std::pair<ROOT::RFieldToken, void*>> fTokenAddress;
+    std::vector<std::pair<std::string, void*>> fNameAddress;
 
     ClassDefOverride(FairRNTupleSink, 1);
 };
@@ -105,9 +125,13 @@ class FairRNTupleSink : public FairSink
 template<typename T>
 void FairRNTupleSink::RegisterRNTuple(const char* brname, T*& obj)
 {
-    LOG(info) << "RegisterRNTuple(\"" << brname << "\")";
-    fModel->MakeField<T>(brname);
-    fTokenAddress.push_back(std::make_pair(fModel->GetToken(brname), obj));
+    LOG(info) << "RegisterRNTuple(\"" << brname << "\") @ " << obj;
+    if (fModel) {
+        fModel->MakeField<T>(brname);
+    }
+    std::string oString;
+    oString = brname;
+    fNameAddress.push_back(std::make_pair(oString, obj));
 }
 
 #endif /* defined(__FAIRROOT__FairRNTupleSink__) */
