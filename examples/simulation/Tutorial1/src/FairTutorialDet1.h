@@ -59,8 +59,7 @@ class FairTutorialDet1 : public FairDetector
     /**      This method is an example of how to add your own point
      *       of type FairTutorialDet1Point to the clones array
      */
-    FairTutorialDet1Point*
-        AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length, Double_t eLoss);
+    void AddHit(Int_t trackID, Int_t detID, TVector3 pos, TVector3 mom, Double_t time, Double_t length, Double_t eLoss);
 
     /** The following methods can be implemented if you need to make
      *  any optional action in your detector during the transport.
@@ -71,6 +70,9 @@ class FairTutorialDet1 : public FairDetector
     FairModule* CloneModule() const override;
 
     Bool_t IsSensitive(const std::string& name) override;
+
+    void SetVectorStorage(const bool vs = true) {fVectorStorage = vs;}
+    bool IsVectorStorage() {return fVectorStorage;}
 
   private:
     /** Track information to be stored until the track leaves the
@@ -84,9 +86,12 @@ class FairTutorialDet1 : public FairDetector
 
     bool fIsInitialised{false};   //!  prevent double initilization
 
+    bool fVectorStorage{true};
+
     /** container for data points */
 
     std::unique_ptr<TClonesArray> fFairTutorialDet1PointCollection{new TClonesArray("FairTutorialDet1Point")};   //!
+    std::vector<FairTutorialDet1Point>* fPointVector{new std::vector<FairTutorialDet1Point>};
 
     FairTutorialDet1(const FairTutorialDet1&);
     FairTutorialDet1& operator=(const FairTutorialDet1&);

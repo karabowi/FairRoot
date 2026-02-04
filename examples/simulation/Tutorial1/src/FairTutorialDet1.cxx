@@ -54,7 +54,6 @@ Bool_t FairTutorialDet1::ProcessHits(FairVolume* vol)
 {
     /** This method is called from the MC stepping */
 
-    LOG(debug) << "In FairTutorialDet1::ProcessHits";
     // Set parameters at entrance of volume. Reset ELoss.
     if (TVirtualMC::GetMC()->IsTrackEntering()) {
         fELoss = 0.;
@@ -91,7 +90,10 @@ Bool_t FairTutorialDet1::ProcessHits(FairVolume* vol)
     return kTRUE;
 }
 
-void FairTutorialDet1::EndOfEvent() { fFairTutorialDet1PointCollection->Clear(); }
+void FairTutorialDet1::EndOfEvent() {
+    fFairTutorialDet1PointCollection->Clear();
+    fPointVector->clear();
+}
 
 void FairTutorialDet1::Register()
 {
@@ -100,8 +102,12 @@ void FairTutorialDet1::Register()
       this collection will not be written to the file, it will exist
       only during the simulation.
   */
-
-    GetRootManager().Register("TutorialDetPoint", "TutorialDet", fFairTutorialDet1PointCollection.get(), kTRUE);
+    if (!fVectorStorage) {
+        GetRootManager().Register("TutorialDetPoint", "TutorialDet", fFairTutorialDet1PointCollection.get(), kTRUE);
+    }
+    else {
+        GetRootManager().RegisterAny("TutorialDetPoint", fPointVector, kTRUE);
+    }
 }
 
 TClonesArray* FairTutorialDet1::GetCollection(Int_t iColl) const
@@ -113,7 +119,10 @@ TClonesArray* FairTutorialDet1::GetCollection(Int_t iColl) const
     }
 }
 
-void FairTutorialDet1::Reset() { fFairTutorialDet1PointCollection->Clear(); }
+void FairTutorialDet1::Reset() {
+    fFairTutorialDet1PointCollection->Clear();
+    fPointVector->clear();
+}
 
 Bool_t FairTutorialDet1::IsSensitive(const std::string& name)
 {
@@ -129,17 +138,22 @@ void FairTutorialDet1::ConstructGeometry()
     ConstructASCIIGeometry<FairTutorialDet1Geo, FairTutorialDet1GeoPar>("FairTutorialDet1GeoPar");
 }
 
-FairTutorialDet1Point* FairTutorialDet1::AddHit(Int_t trackID,
-                                                Int_t detID,
-                                                TVector3 pos,
-                                                TVector3 mom,
-                                                Double_t time,
-                                                Double_t length,
-                                                Double_t eLoss)
+void FairTutorialDet1::AddHit(Int_t trackID,
+                              Int_t detID,
+                              TVector3 pos,
+                              TVector3 mom,
+                              Double_t time,
+                              Double_t length,
+                              Double_t eLoss)
 {
-    TClonesArray& clref = *fFairTutorialDet1PointCollection;
-    Int_t size = clref.GetEntriesFast();
-    return new (clref[size]) FairTutorialDet1Point(trackID, detID, pos, mom, time, length, eLoss);
+    if (!fVectorStorage) {
+        TClonesArray& clref = *fFairTutorialDet1PointCollection;
+        Int_t size = clref.GetEntriesFast();
+        new (clref[size]) FairTutorialDet1Point(trackID, detID, pos, mom, time, length, eLoss);
+    }
+    else {
+        fPointVector->push_back(FairTutorialDet1Point(trackID, detID, pos, mom, time, length, eLoss));
+    }
 }
 
 FairModule* FairTutorialDet1::CloneModule() const
