@@ -292,6 +292,12 @@ class FairRootManager : public TObject
     Int_t GetInstanceId() const { return fId; }
     void UpdateFileName(TString& fileName);
 
+    void CreateParallelWriter() {
+        if (fSink->GetSinkType() == kRNTUPLESINK) {
+            ((FairRNTupleSink*)(fSink.get()))->CreateParallelWriter();
+        }
+    }
+
     /** Return a pointer to the output File of type TFile */
     TFile* GetOutFile();
     /** Return a pointer to the output tree of type TTree */

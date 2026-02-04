@@ -637,8 +637,8 @@ void FairMCApplication::FinishEvent()
     LOG(debug) << "[" << fRootManager->GetInstanceId()
                << " FairMCMCApplication::FinishEvent: " << fMCEventHeader->GetEventID() << " (MC "
                << TVirtualMC::GetMC()->CurrentEvent() << ")";
-    if (TVirtualMC::GetMC()->IsMT() && fRun->GetSink()->GetSinkType() == kONLINESINK)
-    {   // fix the rare case when running G4 multithreaded on MQ
+    if (TVirtualMC::GetMC()->IsMT())
+    {   // fix the case when running G4 multithreaded
         fMCEventHeader->SetEventID(TVirtualMC::GetMC()->CurrentEvent() + 1);
     }
 
@@ -875,6 +875,7 @@ void FairMCApplication::InitGeometry()
         RegisterOutput();
         if (GetIsMT()) {
             fRootManager->RemoveOutputFolderForMtMode();
+            fRootManager->CreateParallelWriter();
         }
     }
     fMCEventHeader->SetRunID(runId);
