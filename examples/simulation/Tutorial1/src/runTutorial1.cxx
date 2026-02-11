@@ -8,6 +8,7 @@
 #include "../macros/run_tutorial1_binary.C"
 #include "FairLogger.h"
 #include "FairSimConfig.h"
+#include "FairTutorialDet1Point.h"
 
 int main(int argc, char* argv[])
 {
