@@ -62,34 +62,11 @@ FairRNTupleSink::FairRNTupleSink(const TString RootFileName, const char* Title)
     fModel = RNTupleModel::Create();
 }
 
-FairRNTupleSink::FairRNTupleSink(RNTParaWriter* paraWriter)
+FairRNTupleSink::FairRNTupleSink(std::shared_ptr<RNTParaWriter> sharedWriter)
     : FairSink()
+    , fParaWriter(std::move(sharedWriter))   // increments ref-count
 {
-    SetParallelWriter(paraWriter);
 }
-
-/*FairRNTupleSink::~FairRNTupleSink()
-{
-    if (fModel) {
-        fModel.reset();
-    }
-    if (fWriter) {
-        fWriter.reset();
-    }
-    if (fParaWriter) {
-        fParaWriter.reset();
-    }
-    if (fFillContext) {
-        fFillContext.reset();
-    }
-    if (fEntry) {
-        fEntry.reset();
-    }
-    if (fRootFile) {
-        fRootFile->Close();
-        fRootFile.reset();
-    }
-}*/
 
 Bool_t FairRNTupleSink::InitSink()
 {
@@ -121,7 +98,7 @@ void FairRNTupleSink::WriteFolder()
 }
 
 void FairRNTupleSink::CreateParallelWriter() {
-    fParaWriter = RNTupleParallelWriter::Append(std::move(fModel), "fairdata", *fRootFile);
+    fParaWriter = std::shared_ptr<RNTParaWriter>(RNTupleParallelWriter::Append(std::move(fModel), "fairdata", *fRootFile).release());
 }
 
 bool FairRNTupleSink::CreateParallelPersistentBranchesAny() {
@@ -185,7 +162,7 @@ Int_t FairRNTupleSink::Write(const char*, Int_t, Int_t)
 {
     if (fParaWriter) {
         if (FairRootManager::Instance()->GetInstanceId() == 0) {
-            fParaWriter.reset();
+            fParaWriter->CommitDataset();
         }
         else {
             fEntry.reset();
@@ -203,7 +180,7 @@ Int_t FairRNTupleSink::Write(const char*, Int_t, Int_t)
 //_____________________________________________________________________________
 FairSink* FairRNTupleSink::CloneSink()
 {
-    FairRNTupleSink* newSink = new FairRNTupleSink(this->GetParallelWriterRawPtr());
+    FairRNTupleSink* newSink = new FairRNTupleSink(fParaWriter);
 
     return newSink;
 }

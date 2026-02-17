@@ -84,17 +84,10 @@ class FairRNTupleSink : public FairSink
     FairSink* CloneSink() override;
 
   private:
-    FairRNTupleSink(RNTParaWriter* paraWriter);
+    FairRNTupleSink(std::shared_ptr<RNTParaWriter> sharedWriter);
 
     bool CreatePersistentBranchesAny() override;
     bool CreateParallelPersistentBranchesAny();
-
-    void SetParallelWriter(RNTParaWriter* paraWriter) {
-        fParaWriter.reset(paraWriter);
-    }
-    RNTParaWriter* GetParallelWriterRawPtr() {
-        return fParaWriter.get();
-    }
 
     /** Title of input sink, could be input, background or signal*/
     std::string fOutputTitle{""};
@@ -108,7 +101,7 @@ class FairRNTupleSink : public FairSink
 
     std::unique_ptr<RNTupleModel> fModel;
     std::unique_ptr<RNTupleWriter> fWriter;
-    std::unique_ptr<RNTParaWriter> fParaWriter;
+    std::shared_ptr<RNTParaWriter> fParaWriter;
     std::shared_ptr<RNTupleFillContext> fFillContext;
     std::unique_ptr<REntry> fEntry;
 
