@@ -36,6 +36,7 @@ void Config()
     Bool_t specialStacking = false;
     FairFastSimRunConfiguration* runConfiguration = new FairFastSimRunConfiguration(
         "geomRoot", "QGSP_BERT_EMV", "stepLimiter+specialCuts+specialControls", specialStacking, mtMode);
+    runConfiguration->SetSpecialCutsOld();
     // TG4RunConfiguration* runConfiguration
     //     = new TG4RunConfiguration("geomRoot", "QGSP_BERT_EMV", "stepLimiter+specialCuts+specialControls",
     //                               specialStacking, mtMode);
