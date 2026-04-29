@@ -41,3 +41,5 @@
 # Limit max number of Cerenkov photons per step
 # (Needed as Cerenkov process does not limit step itself)
 #
+
+/run/numberOfThreads 2
