@@ -14,6 +14,8 @@
 #include <TClonesArray.h>
 #include <cassert>
 
+#include "FairMCPoint.h"
+
 class FairVolume;
 class FairRootManager;
 
@@ -70,6 +72,12 @@ class FairDetector : public FairModule
     /**
       has to be called after each event to reset the containers
     */
+
+    virtual std::vector<FairMCPoint*> GetPointVectorForIndex(Int_t iColl) const {
+        return {};
+    }
+
+
     virtual void Reset() = 0;
 
     virtual void CopyClones(TClonesArray*, TClonesArray*, Int_t) {}
