@@ -85,6 +85,9 @@ class FairConstField : public FairField
     /** Screen output **/
     void Print(Option_t*) const override;
 
+    /** Clone field for MT **/
+    FairField* CloneField() const override;
+
     ClassDefOverride(FairConstField, 1);
 
   private:
@@ -100,6 +103,10 @@ class FairConstField : public FairField
     Double_t fBx;
     Double_t fBy;
     Double_t fBz;
+
+    FairConstField(const FairConstField &field);
+    FairConstField &operator=(const FairConstField &) { return *this; };
+
 };
 
 #endif

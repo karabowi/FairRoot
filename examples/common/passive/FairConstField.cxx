@@ -61,6 +61,21 @@ FairConstField::FairConstField(const char* name,
     fType = 0;
 }
 
+// ------------   Copy Constructor ----------------------------------------
+FairConstField::FairConstField(const FairConstField &field)
+    : FairField()
+    , fXmin(field.GetXmin())
+    , fXmax(field.GetXmax())
+    , fYmin(field.GetYmin())
+    , fYmax(field.GetYmax())
+    , fZmin(field.GetZmin())
+    , fZmax(field.GetZmax())
+    , fBx(field.GetBx())
+    , fBy(field.GetBy())
+    , fBz(field.GetBz())
+{
+}
+
 FairConstField::FairConstField(FairConstPar* fieldPar)
     : FairField()
     , fXmin(0)
@@ -164,4 +179,9 @@ void FairConstField::FillParContainer()
     Par->SetParameters(this);
     Par->setInputVersion(fRun->GetRunId(), 1);
     Par->setChanged();
+}
+
+FairField* FairConstField::CloneField() const
+{
+    return new FairConstField(*this);
 }
