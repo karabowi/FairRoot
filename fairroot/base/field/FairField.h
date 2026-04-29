@@ -61,6 +61,9 @@ class FairField : public TVirtualMagField
     /** Field type ( 0=constant, 1=map, 2=map sym2, 3 = map sym3 ) **/
     Int_t GetType() const { return fType; }
 
+    /** Clone this object (used in MT mode only)*/
+    virtual FairField* CloneField() const;
+
     /** Get x component of magnetic field [kG]
      ** @param x,y,z    Position [cm]
      **/

@@ -41,3 +41,9 @@ void FairField::GetFieldValue(const Double_t point[3], Double_t* bField)
     bField[1] = GetBy(point[0], point[1], point[2]);
     bField[2] = GetBz(point[0], point[1], point[2]);
 }
+
+FairField* FairField::CloneField() const
+{
+    Fatal("CloneField", "Has to be overriden in multi-threading applications.");
+    return 0;
+}
