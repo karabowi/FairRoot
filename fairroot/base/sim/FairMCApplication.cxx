@@ -468,7 +468,11 @@ void FairMCApplication::InitOnWorker()
 
     // Set data to MC
     fMC->SetStack(fStack.get());
-    fMC->SetMagField(fxField);
+
+    if (fxField) {
+        fMC->SetMagField(fxField->CloneField());
+    }
+       //fMC->SetMagField(fxField);
 
     InitFinalizer();
 
