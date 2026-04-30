@@ -1,0 +1,7 @@
+add_subdirectory(Tools)
+add_subdirectory(IdealDigitizing)
+add_subdirectory(WaveformModifier)
+add_subdirectory(LightpulserWaveform)
+add_subdirectory(CosmicWaveform)
+add_subdirectory(FeatureExtraction)
+add_subdirectory(FeatureExtractionBlindDeconvolution)

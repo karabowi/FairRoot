@@ -1,0 +1,30 @@
+//****************************************************************************
+//*                   This file is part of PandaRoot.                        *
+//*                                                                          *
+//*            PandaRoot is distributed under the terms of the               *
+//*              GNU General Public License (GPL) version 3,                 *
+//*                 copied verbatim in the file "LICENSE".                   *
+//*                                                                          *
+//*  Copyright (C) 2006 - 2024 FAIR GmbH and copyright holders of PandaRoot  *
+//*     The copyright holders are listed in the file "COPYRIGHTHOLDERS".     *
+//*               The authors are listed in the file "AUTHORS".              *
+//****************************************************************************
+
+/*
+ * PndTrackEvaluatorDetI.cpp
+ *
+ *  Created on: 19.08.2021
+ *      Author: tstockmanns
+ */
+
+#include <PndTrackEvaluatorDetI.h>
+
+PndTrackEvaluatorDetI::PndTrackEvaluatorDetI() {
+	// TODO Auto-generated constructor stub
+
+}
+
+PndTrackEvaluatorDetI::~PndTrackEvaluatorDetI() {
+	// TODO Auto-generated destructor stub
+}
+

@@ -1,0 +1,45 @@
+//****************************************************************************
+//*                   This file is part of PandaRoot.                        *
+//*                                                                          *
+//*            PandaRoot is distributed under the terms of the               *
+//*              GNU General Public License (GPL) version 3,                 *
+//*                 copied verbatim in the file "LICENSE".                   *
+//*                                                                          *
+//*  Copyright (C) 2006 - 2024 FAIR GmbH and copyright holders of PandaRoot  *
+//*     The copyright holders are listed in the file "COPYRIGHTHOLDERS".     *
+//*               The authors are listed in the file "AUTHORS".              *
+//****************************************************************************
+
+#ifndef PNDTRACKINGEVENTINFO_H_
+#define PNDTRACKINGEVENTINFO_H_
+
+#include "FairMultiLinkedData.h"
+#include "FairRootManager.h"
+#include <vector>
+#include "FairLink.h"
+#include "PndTrack.h"
+#include "PndTrackCand.h"
+#include <TClonesArray.h>
+#include <map>
+
+class PndTrackingEventInfo : public TObject {
+
+ public:
+  PndTrackingEventInfo(PndTrack *, FairLink);
+
+  ~PndTrackingEventInfo();
+
+  void CalcEventPurity(PndTrack *, FairLink);
+
+  double GetEventPurity() { return fEventPurity; }
+
+  std::map<int, int> GetNumTimesHitUsed(PndTrack *);
+
+ protected:
+  double fEventPurity;
+  std::map<int, int> fMapHitIdTimesUsed;
+
+  ClassDef(PndTrackingEventInfo, 2);
+};
+
+#endif
